@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  db:
+    image: "postgres:14.4"
+    restart: always
+    container_name: "opub_postgres"
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "54321:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  web:
+    build: .
+    container_name: "opub_dataset_server"
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8005:8000"
+    depends_on:
+      - db
+volumes:
+  postgres_data:
+    name: opub_postgres_data
