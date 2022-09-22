@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.http import Http404
 from keycloak import KeycloakOpenID
 import requests
 import json
+from django.views.decorators.csrf import csrf_exempt
 
 #configure client
 keycloak_openid = KeycloakOpenID(server_url="https://kc.ndp.civicdatalab.in/auth/",
@@ -19,15 +20,15 @@ password = "supersecretpassword$123"
 
 auth_url = 'http://127.0.0.1:8000/graphql'
 
-
+@csrf_exempt
 def register(request):
     try:
 
         query = f"""
                 mutation {{
                     register(
-                    email: "new_user3@email.com",
-                    username: "new_user3",
+                    email: "new_user5@email.com",
+                    username: "new_user5",
                     password1: "{password}",
                     password2: "{password}",
                 ) {{
@@ -46,7 +47,7 @@ def register(request):
         print(response_json)        
 
 
-        return HttpResponse(response_json) 
+        return JsonResponse(response_json, safe=False) 
     except Exception as e:
         raise Http404("user doesn't exist")
 

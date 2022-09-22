@@ -29,6 +29,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_WHITELIST = (
+       'http://localhost:3000',
+)
+
+CORS_ALLOW_HEADERS = ['*']
+
+CSRF_TRUSTED_ORIGINS = [
+                           'http://13.232.239.70:3000/',
+                           'http://localhost:3000/',
+                           'http://127.0.0.1:3000/',
+                        ]
+
 
 # Application definition
 
@@ -41,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'graphene_django',
     'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
+    'corsheaders',
     "graphql_auth",
     'users',
     'django_filters',
