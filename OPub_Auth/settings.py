@@ -40,6 +40,7 @@ CSRF_TRUSTED_ORIGINS = [
                            'http://13.232.239.70:3000/',
                            'http://localhost:3000/',
                            'http://127.0.0.1:3000/',
+                           'https://auth.idp.civicdatalab.in',
                         ]
 
 
