@@ -22,13 +22,16 @@ auth_url = 'http://127.0.0.1:8000/graphql'
 
 @csrf_exempt
 def register(request):
+    post_data = json.loads(request.body.decode('utf-8'))
+    email    = post_data.get('res_id', None)
+    username = post_data.get('username', None)
     try:
 
         query = f"""
                 mutation {{
                     register(
-                    email: "new_user5@email.com",
-                    username: "new_user5",
+                    email: "{email}",
+                    username: "{username}",
                     password1: "{password}",
                     password2: "{password}",
                 ) {{
@@ -49,7 +52,48 @@ def register(request):
 
         return JsonResponse(response_json, safe=False) 
     except Exception as e:
-        raise Http404("user doesn't exist")
+        raise Http404("user already exists")
 
+@csrf_exempt
 def get_user(token):
     userinfo = keycloak_openid.userinfo(token['access_token'])
+    return userinfo
+    
+@csrf_exempt  
+def login(request):
+    
+    post_data = json.loads(request.body.decode('utf-8'))
+    token     = post_data.get('token', None)
+
+    userinfo = get_user(token)
+    user_name = userinfo['preferred_username']
+    
+    try:
+
+        query = f"""
+                mutation {{
+                    token_auth(username: {user_name}, password: {password}) {{
+                        success,
+                        errors,
+                        unarchiving,
+                        token,
+                        refresh_token,
+                        unarchiving,
+                        user {{
+                        id,
+                        username,
+                        }}
+                    }}
+    }}"""
+
+
+        headers = {} 
+        response = requests.post(auth_url, json = {"query": query},  headers=headers)
+
+        response_json = json.loads(response.text)
+        print(response_json)        
+
+
+        return JsonResponse(response_json, safe=False) 
+    except Exception as e:
+        raise Http404("login failed")
