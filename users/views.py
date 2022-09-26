@@ -23,7 +23,7 @@ auth_url = 'http://127.0.0.1:8000/graphql'
 @csrf_exempt
 def register(request):
     post_data = json.loads(request.body.decode('utf-8'))
-    email    = post_data.get('res_id', None)
+    email    = post_data.get('email', None)
     username = post_data.get('username', None)
     try:
 
