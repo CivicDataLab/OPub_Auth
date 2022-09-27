@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import CustomUser
+from .models import CustomUser, Permissions
 from graphql_auth.models import UserStatus
 
 admin.site.register(UserStatus)
@@ -15,3 +15,4 @@ class CustomUserAdmin(admin.ModelAdmin):
         model = CustomUser
 
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(Permissions)

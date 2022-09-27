@@ -7,20 +7,23 @@ import requests
 import json
 from django.views.decorators.csrf import csrf_exempt
 import ast
+from configparser import ConfigParser
 
-#configure client
-keycloak_openid = KeycloakOpenID(server_url="https://kc.ndp.civicdatalab.in/auth/",
-                                 client_id="opub-idp",
-                                 realm_name="external",
-                                 client_secret_key="YCsLCvO3kNIMcx6tz24jEzAmiHKxpErs")
+config = ConfigParser()
+config.read('config.ini')
 
-# Get WellKnow
+
+#configure keycloak client
+keycloak_openid = KeycloakOpenID(server_url=config.get('keycloak', 'server_url'),
+                                 client_id=config.get('keycloak', 'client_id'),
+                                 realm_name=config.get('keycloak', 'realm_name'),
+                                 client_secret_key=config.get('keycloak', 'client_secret_key'))
 config_well_known = keycloak_openid.well_known()
 
-#password
-password = "supersecretpassword$123"
 
-auth_url = 'http://127.0.0.1:8000/graphql'
+#graphql
+password = config.get('graphql', 'password') 
+auth_url = config.get('graphql', 'base_url')
 
 
 
@@ -39,6 +42,7 @@ def get_user(access_token):
 @csrf_exempt
 def verify_token(request):
     
+    print (auth_url)
     post_data        = json.loads(request.body.decode('utf-8'))
     access_token     = post_data.get('access_token', None)
     userinfo         = get_user(access_token)  
@@ -50,7 +54,7 @@ def verify_token(request):
 def register(request):
     post_data        = json.loads(request.body.decode('utf-8'))
     access_token     = post_data.get('access_token', None)
-    userinfo          = get_user(access_token)
+    userinfo         = get_user(access_token)
     
     if userinfo['success'] == False:
         context = {"Success": False, "error":userinfo['error'], "error_description":userinfo['error_description']}    
@@ -90,6 +94,7 @@ def register(request):
         return JsonResponse(context, safe=False)
     
     except Exception as e:
+        print (e)
         raise Http404("registration failed")
     
     

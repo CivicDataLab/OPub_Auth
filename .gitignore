@@ -10,6 +10,12 @@ sqlite3.db
 # C extensions
 *.so
 
+# django migrations
+users/migrations
+
+#config
+config.ini
+
 # Distribution / packaging
 .Python
 build/
