@@ -5,6 +5,7 @@ from django.db import models
 # users/models.py
 
 from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext_lazy as _
 
 class CustomUser(AbstractUser):
 
@@ -13,18 +14,17 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = "username"    
     EMAIL_FIELD    = "email"     
     
-class Permissions(models.Model):
-  
-    roles = [
-        ('EDITOR', 'Editor'),
-        ('OWNER', 'Owner'),
-        ('VIEWER', 'Viewer'),
-    ]  
-    user_name      = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    dataset_id     = models.CharField(max_length=100)
-    resource_id    = models.CharField(max_length=100)
+class UserRoles(models.Model):
+    
+    class Roles(models.TextChoices):
+        PMU             = 'PMU', _('PMU')
+        PROVIDER_ADMIN  = 'PRA', _('Provider_admin')
+        PROVIDER        = 'PR', _('Provider')
+        CONSUMER        = 'CR', _('Consumer')
+
+    username       = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     org_id         = models.CharField(max_length=100)
-    role           = models.CharField(max_length=50, choices=roles, default='VIEWER')
-    columns        = models.JSONField()
-    rows           = models.IntegerField()
+    role           = models.CharField(max_length=50, choices=Roles.choices, default=Roles.CONSUMER)
+    
+  
  
