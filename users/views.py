@@ -22,12 +22,12 @@ keycloak_openid = KeycloakOpenID(server_url=config.get('keycloak', 'server_url')
 config_well_known = keycloak_openid.well_known()
 
 
-#graphql
+#graphql config
 password = config.get('graphql', 'password') 
 auth_url = config.get('graphql', 'base_url')
 
 
-
+# util functions
 @csrf_exempt
 def get_user(access_token):
     
@@ -39,16 +39,6 @@ def get_user(access_token):
         userinfo = {'success':False, "error":"invalid_token", "error_description":"Token verification failed"}
         
     return userinfo
-
-@csrf_exempt
-def verify_token(request):
-
-    print ('-----------------', request.body )
-    post_data        = json.loads(request.body.decode('utf-8'))
-    access_token     = post_data.get('access_token', None)
-    userinfo         = get_user(access_token)  
-    
-    return JsonResponse(userinfo, safe=False)  
 
 @csrf_exempt
 def has_access(username, access_org_id, access_req):
@@ -70,26 +60,18 @@ def has_access(username, access_org_id, access_req):
     else:
         context = {"success": True, "username":username, "access_org_id":access_org_id, "role": role, "access_req":access_req, "access":role_access}
     return context
-    
+
+
+# api functions
 @csrf_exempt
-def check_access(request):
-    
+def verify_user_token(request):
+
     print ('-----------------', request.body )
     post_data        = json.loads(request.body.decode('utf-8'))
     access_token     = post_data.get('access_token', None)
-    access_org_id    = post_data.get('access_org_id', None)
-    access_req       = post_data.get('access_req', None)
     userinfo         = get_user(access_token)  
     
-    if userinfo['success'] == False:
-        context = {"Success": False, "error":userinfo['error'], "error_description":userinfo['error_description']}    
-        return JsonResponse(context, safe=False)
-    
-    username = userinfo['preferred_username']
-    
-    has_access_res   = has_access(username, access_org_id, access_req)
-
-    return JsonResponse(has_access_res, safe=False)  
+    return JsonResponse(userinfo, safe=False)  
     
 
 @csrf_exempt
@@ -149,11 +131,63 @@ def check_user(request):
         user_roles_res = []
         for role in user_roles:
             user_roles_res.append({"org_id":role['org_id'], "role":role['role__role_name']})
-        context = {"Success": True, "username":username, "email":email, "access_token":access_token, "access":user_roles_res, "Comment" : "User already exists"}
+        context = {"Success": True, "username":username, "email":email, "access_token":access_token, "access":user_roles_res, "comment" : "User already exists"}
         return JsonResponse(context, safe=False)   
         
         
+@csrf_exempt
+def check_user_access(request):
     
+    print ('-----------------', request.body )
+    post_data        = json.loads(request.body.decode('utf-8'))
+    access_token     = post_data.get('access_token', None)
+    access_org_id    = post_data.get('access_org_id', None)
+    access_req       = post_data.get('access_req', None)
+    userinfo         = get_user(access_token)  
+    
+    if userinfo['success'] == False:
+        context = {"Success": False, "error":userinfo['error'], "error_description":userinfo['error_description']}    
+        return JsonResponse(context, safe=False)
+    
+    username = userinfo['preferred_username']
+    
+    has_access_res   = has_access(username, access_org_id, access_req)
+
+    return JsonResponse(has_access_res, safe=False)  
+
+
+@csrf_exempt
+def create_user_role(request):
+    
+    print ('-----------------', request.body )
+    post_data        = json.loads(request.body.decode('utf-8'))
+    access_token     = post_data.get('access_token', None)
+    org_id           = post_data.get('org_id', None)
+    role_name        = 'PRA'
+    
+    userinfo         = get_user(access_token) 
+    
+    if userinfo['success'] == False:
+        context = {"Success": False, "error":userinfo['error'], "error_description":userinfo['error_description']}    
+        return JsonResponse(context, safe=False)
+    
+    if org_id == None:
+        context = {"Success": False, "error":"wrong org_id", "error_description":"org_id is blank"}    
+        return JsonResponse(context, safe=False)
+    
+    username         = userinfo['preferred_username'] 
+    
+    try:
+        role             = Role.objects.get(role_name=role_name) 
+        user             = CustomUser.objects.get(username=username)  
+        newUserRole      = UserRole(username=user, org_id=org_id, role=role)
+        
+        newUserRole.save()
+        context = {"Success": True, "comment":'User Role Added Successfully'}    
+        return JsonResponse(context, safe=False)
+    except Exception as e:
+        context = {"Success": False, "error":e, "error_description":e}    
+        return JsonResponse(context, safe=False) 
     
     
 @csrf_exempt  
