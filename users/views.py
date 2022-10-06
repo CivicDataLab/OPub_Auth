@@ -8,7 +8,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 import ast
 from configparser import ConfigParser
-from .models import CustomUser, UserRoles
+from .models import *
 
 config = ConfigParser()
 config.read('config.ini')
@@ -58,7 +58,7 @@ def has_access(username, access_org_id, access_req):
                    "PR": ['CREATE', 'UPDATE', 'VIEW'],
                    "CR": ['VIEW']}  
     try:
-        role_obj = UserRoles.objects.get(username__username=username, org_id=access_org_id)
+        role_obj = UserRole.objects.get(username__username=username, org_id=access_org_id)
         role = getattr(role_obj, 'role')
     except Exception as e:
         return {"Success": False, "error":str(e), "error_description":str(e)}
@@ -93,7 +93,7 @@ def check_access(request):
     
 
 @csrf_exempt
-def register(request):
+def check_user(request):
     post_data        = json.loads(request.body.decode('utf-8'))
     access_token     = post_data.get('access_token', None)
     userinfo         = get_user(access_token)
@@ -104,40 +104,55 @@ def register(request):
         
     username          = userinfo['preferred_username']
     email             = userinfo['email']
-
-    try:
-
-        query = f"""
-                mutation {{
-                    register(
-                    email: "{email}",
-                    username: "{username}",
-                    password1: "{password}",
-                    password2: "{password}",
-                ) {{
-                    success,
-                    errors,
-                    token,
-                    refresh_token
-                }}
-        }}"""
-
-
-        headers = {} 
-        response = requests.post(auth_url, json = {"query": query},  headers=headers)
-        response_json = json.loads(response.text)
-        print (response_json)
-        
-        if response_json['data']['register']['success'] == True:
-            context = {"Success": True, "username":username, "email":email, "access_token":access_token}
-        else:
-            context = {"Success": False, "errors":response_json['data']['register']['errors']}    
-                    
-        return JsonResponse(context, safe=False)
     
-    except Exception as e:
-        print (e)
-        raise Http404("registration failed")
+    #check if username is in auth db
+    num_users = CustomUser.objects.filter(username = username).count()
+    
+    if num_users == 0:
+
+        try:
+
+            query = f"""
+                    mutation {{
+                        register(
+                        email: "{email}",
+                        username: "{username}",
+                        password1: "{password}",
+                        password2: "{password}",
+                    ) {{
+                        success,
+                        errors,
+                        token,
+                        refresh_token
+                    }}
+            }}"""
+
+
+            headers = {} 
+            response = requests.post(auth_url, json = {"query": query},  headers=headers)
+            response_json = json.loads(response.text)
+            print (response_json)
+            
+            if response_json['data']['register']['success'] == True:
+                context = {"Success": True, "username":username, "email":email, "access_token":access_token, "Comment" : "User Registration successful"}
+            else:
+                context = {"Success": False, "errors":response_json['data']['register']['errors']}    
+                        
+            return JsonResponse(context, safe=False)
+        
+        except Exception as e:
+            print (e)
+            context = {"Success": False, "errors":response_json['data']['register']['errors']} 
+            return JsonResponse(context, safe=False)
+    else:
+        user_roles = UserRole.objects.filter(username__username=username).values('org_id','role__role_name')
+        user_roles_res = []
+        for role in user_roles:
+            user_roles_res.append({"org_id":role['org_id'], "role":role['role__role_name']})
+        context = {"Success": True, "username":username, "email":email, "access_token":access_token, "access":user_roles_res, "Comment" : "User already exists"}
+        return JsonResponse(context, safe=False)   
+        
+        
     
     
     

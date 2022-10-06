@@ -80,7 +80,7 @@ print (token['access_token'], userinfo)
 
 # print(divide(4,2))
 
-
+# # decorator for getting username
 # import requests
 # import json
 
@@ -113,6 +113,56 @@ print (token['access_token'], userinfo)
 # # setrequest("req_id1", "")
 # print(setrequest("req_id1", user="eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJCdXFLSkxZRUo0azdxc2M3RHItRjRZYlY0YWVsTzNMUnEtaDZWR3ZZR0ZNIn0.eyJleHAiOjE2NjQyNjUxNjUsImlhdCI6MTY2NDI2NDg2NSwianRpIjoiZDIwMjk5ZmQtMWRjZC00ZmZhLTk5ZmItMWY4MTQ4ODg4YTc4IiwiaXNzIjoiaHR0cHM6Ly9rYy5uZHAuY2l2aWNkYXRhbGFiLmluL2F1dGgvcmVhbG1zL2V4dGVybmFsIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImE3M2EyZThlLWQ3NjktNDA5OC1iNzAxLWFmMjAzN2M5OGY5ZCIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9wdWItaWRwIiwic2Vzc2lvbl9zdGF0ZSI6IjRmMGNlOGNkLTI1YzEtNGI1Ny1hYzU2LTIyMzYwYTRhYzlmYSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLWV4dGVybmFsIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJzaWQiOiI0ZjBjZThjZC0yNWMxLTRiNTctYWM1Ni0yMjM2MGE0YWM5ZmEiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IkFiaGluYXYiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhYmhpbmF2IiwiZ2l2ZW5fbmFtZSI6IkFiaGluYXYiLCJlbWFpbCI6ImFiaGluYXZAY2l2aWNkYXRhbGFiLmluIn0.cnPbGoG3_Ha-kL1QZ8EyI0oq50XZyTjc802pxlzjr3QM8IKPw51xV_EH9Cl4D7Ck7CGEM2FzyMeooq0lB3SVUAbpl1nDC30g6C68t7MyCiXptKeumW1Lw7tYdwbJzd_w4eX1MGXCTCp47qF7pQbJgwTEii7IRxUuV5PVQ6G9bWjkFi4hkeyc5eTRPi6Ql4FQzK-wX01qTmcqO4DpusVfKo7-xbzTBuYYuFYiv-Ki3kiMg4WXIW06IMLSp5Rqh62_6dIzIJf_-rszVIllCvQdD_JkLCm50qtvZp_34H1DALb9ImXmNdKoZBcLzPHQXn7H2fMyZsKNWgCuy74sz1zbAA"))
     
+
+
+
+
+
+# decorator for getting username
+# import requests
+# import json
+
+# auth_url = 'http://127.0.0.1:8000/users/check_access'
+# def validate_token(func):
+    
+#     def inner(*args, **kwargs):
+#         print("checking ", kwargs['access_req'],  " access for ", kwargs['user'], " for organization", kwargs['access_org_id'])
+#         if kwargs['user'] == "":
+#             print("Whoops! Empty user")
+#             return {"Success":False, "error":"Empty user", "error_description":"Empty user"}
+        
+        
+#         headers = {} 
+#         response = requests.post(auth_url, data = json.dumps({"access_token": kwargs['user'], "access_org_id": kwargs['access_org_id'], "access_req"   : kwargs['access_req']}),  headers=headers)
+#         response_json = json.loads(response.text)
+#         if response_json['success'] == False:
+#             return {"Success":False, "error":response_json['error'], "error_description":response_json['error_description']}
+        
+#         kwargs['user'] = response_json['preferred_username']
+#         return func(*args, **kwargs)
+    
+#     return inner
+
+
+# @validate_token
+# def setrequest(req, user, access_org_id, access_req):
+#     return(req, user, access_org_id, access_req)
+
+# # setrequest("req_id1", "")
+# print(setrequest("req_id1", user="eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJCdXFLSkxZRUo0azdxc2M3RHItRjRZYlY0YWVsTzNMUnEtaDZWR3ZZR0ZNIn0.eyJleHAiOjE2NjQyNjUxNjUsImlhdCI6MTY2NDI2NDg2NSwianRpIjoiZDIwMjk5ZmQtMWRjZC00ZmZhLTk5ZmItMWY4MTQ4ODg4YTc4IiwiaXNzIjoiaHR0cHM6Ly9rYy5uZHAuY2l2aWNkYXRhbGFiLmluL2F1dGgvcmVhbG1zL2V4dGVybmFsIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImE3M2EyZThlLWQ3NjktNDA5OC1iNzAxLWFmMjAzN2M5OGY5ZCIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9wdWItaWRwIiwic2Vzc2lvbl9zdGF0ZSI6IjRmMGNlOGNkLTI1YzEtNGI1Ny1hYzU2LTIyMzYwYTRhYzlmYSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLWV4dGVybmFsIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJzaWQiOiI0ZjBjZThjZC0yNWMxLTRiNTctYWM1Ni0yMjM2MGE0YWM5ZmEiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IkFiaGluYXYiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhYmhpbmF2IiwiZ2l2ZW5fbmFtZSI6IkFiaGluYXYiLCJlbWFpbCI6ImFiaGluYXZAY2l2aWNkYXRhbGFiLmluIn0.cnPbGoG3_Ha-kL1QZ8EyI0oq50XZyTjc802pxlzjr3QM8IKPw51xV_EH9Cl4D7Ck7CGEM2FzyMeooq0lB3SVUAbpl1nDC30g6C68t7MyCiXptKeumW1Lw7tYdwbJzd_w4eX1MGXCTCp47qF7pQbJgwTEii7IRxUuV5PVQ6G9bWjkFi4hkeyc5eTRPi6Ql4FQzK-wX01qTmcqO4DpusVfKo7-xbzTBuYYuFYiv-Ki3kiMg4WXIW06IMLSp5Rqh62_6dIzIJf_-rszVIllCvQdD_JkLCm50qtvZp_34H1DALb9ImXmNdKoZBcLzPHQXn7H2fMyZsKNWgCuy74sz1zbAA",
+#                  access_org_id="123", access_req="APPROVE"))
+ 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
