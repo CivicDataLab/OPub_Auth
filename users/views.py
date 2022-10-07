@@ -166,7 +166,7 @@ def create_user_role(request):
     role_name        = 'PRA'
     
     userinfo         = get_user(access_token) 
-    
+
     if userinfo['success'] == False:
         context = {"Success": False, "error":userinfo['error'], "error_description":userinfo['error_description']}    
         return JsonResponse(context, safe=False)
@@ -188,6 +188,63 @@ def create_user_role(request):
     except Exception as e:
         context = {"Success": False, "error":e, "error_description":e}    
         return JsonResponse(context, safe=False) 
+    
+    
+@csrf_exempt
+def get_users(request):
+    
+    print ('-----------------', request.body )
+    post_data        = json.loads(request.body.decode('utf-8'))
+    access_token     = post_data.get('access_token', None)
+    org_id           = post_data.get('org_id', None)
+    
+    userinfo         = get_user(access_token) 
+    if userinfo['success'] == False:
+        context = {"Success": False, "error":userinfo['error'], "error_description":userinfo['error_description']}    
+        return JsonResponse(context, safe=False)
+    username         = userinfo['preferred_username'] 
+    userroleobj      = UserRole.objects.filter(username__username=username, org_id=org_id).values('org_id','role__role_name')
+    
+    if len(userroleobj) == 0:
+        context = {"Success": False, "error":"No Matching org and user found", "error_description": "No Matching org and user found"}    
+        return JsonResponse(context, safe=False)
+    
+    userrole         = userroleobj[0]['role__role_name']
+    userorg          = userroleobj[0]['org_id']
+    
+    if userrole == 'PMU':
+        users        = CustomUser.objects.all().values('username')
+        users_list   = []
+        for user in users:
+            user_roles = UserRole.objects.filter(username__username=user['username']).values('org_id','role__role_name')
+            user_roles_res = []
+            for role in user_roles:
+                user_roles_res.append({"org_id":role['org_id'], "role":role['role__role_name']})
+            users_list.append({"username":user['username'], "access":user_roles_res})
+            
+        context = {"Success": True, "users":users_list} 
+        return JsonResponse(context, safe=False)
+    
+    if userrole == 'PRA' and userorg != None:
+        user_roles = UserRole.objects.filter(org_id=userorg).values('username__username','org_id','role__role_name')
+        user_roles_res = {}
+        for role in user_roles:
+            if role['username__username'] in user_roles_res:
+                user_roles_res[role['username__username']].append({"org_id":role['org_id'], "role":role['role__role_name']})
+            else:
+                user_roles_res[role['username__username']] = [{"org_id":role['org_id'], "role":role['role__role_name']}]
+                
+        users_list = []
+        for key, value in user_roles_res.items():
+            users_list.append({"username":key, "access":value})
+        context = {"Success": True, "users":users_list}    
+        return JsonResponse(context, safe=False)
+    
+    context = {"Success": False, "error":"No Matching org and user found", "error_description": ("org is "+userorg +" and role is " +userrole)}    
+    return JsonResponse(context, safe=False)
+    
+
+
     
     
 @csrf_exempt  
