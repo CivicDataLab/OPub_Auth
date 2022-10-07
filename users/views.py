@@ -242,10 +242,73 @@ def get_users(request):
     
     context = {"Success": False, "error":"No Matching org and user found", "error_description": ("org is "+userorg +" and role is " +userrole)}    
     return JsonResponse(context, safe=False)
-    
 
 
+
+@csrf_exempt
+def update_user_role(request):
     
+    print ('-----------------', request.body )
+    post_data        = json.loads(request.body.decode('utf-8'))
+    access_token     = post_data.get('access_token', None)
+    org_id           = post_data.get('org_id', None)
+    role_name        = post_data.get('role_name', None)
+    tgt_user_name    = post_data.get('tgt_user_name', None)
+    action           = post_data.get('action', None)
+    
+    userinfo         = get_user(access_token) 
+
+    if userinfo['success'] == False:
+        context = {"Success": False, "error":userinfo['error'], "error_description":userinfo['error_description']}    
+        return JsonResponse(context, safe=False)
+    
+    if org_id == None:
+        context = {"Success": False, "error":"wrong org_id", "error_description":"org_id is blank"}    
+        return JsonResponse(context, safe=False)
+    
+    if role_name == None or role_name not in ['PRA', 'PR', 'PMU'] and action != "delete":
+        context = {"Success": False, "error":"wrong role", "error_description":"role is not valid"}    
+        return JsonResponse(context, safe=False)
+    
+    username         = userinfo['preferred_username'] 
+    #check for username access
+    userroleobj      = UserRole.objects.filter(username__username=username, org_id=org_id).values('org_id','role__role_name')
+    if len(userroleobj) == 0 or userroleobj[0]['role__role_name'] not in  ['PRA', 'PMU'] :
+        context = {"Success": False, "error":"Access Denied", "error_description":"User is not Authorized"}    
+        return JsonResponse(context, safe=False) 
+        
+    
+    if action == 'update':
+        try:
+            role             = Role.objects.get(role_name=role_name) 
+            user             = CustomUser.objects.get(username=tgt_user_name)  
+            
+            UserRoleObjs     = UserRole.objects.filter(username=user, org_id=org_id)
+            UserRoleObjCount = UserRoleObjs.count()
+            if UserRoleObjCount == 0:
+                newUserRole      = UserRole(username=user, org_id=org_id, role=role)
+                newUserRole.save()
+            else:
+                UserRoleObjs.update(role=role) 
+            context = {"Success": True, "comment":'User Role Added Successfully'}    
+            return JsonResponse(context, safe=False)
+        except Exception as e:
+            context = {"Success": False, "error":str(e), "error_description":str(e)}    
+            return JsonResponse(context, safe=False) 
+        
+    if action == 'delete':
+        try:
+            role             = Role.objects.get(role_name=role_name) 
+            user             = CustomUser.objects.get(username=tgt_user_name)  
+            UserRoleObj      = UserRole.objects.get(username=user, org_id=org_id, role=role)
+            UserRoleObj.delete()
+            context = {"Success": True, "comment":'User Role Deleted Successfully'}    
+            return JsonResponse(context, safe=False)
+        except Exception as e:
+            context = {"Success": False, "error":str(e), "error_description":str(e)}    
+            return JsonResponse(context, safe=False) 
+    
+
     
 @csrf_exempt  
 def login(request):
