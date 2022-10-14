@@ -236,10 +236,21 @@ def get_users(request):
         context = {"Success": False, "error":userinfo['error'], "error_description":userinfo['error_description']}    
         return JsonResponse(context, safe=False)
     username         = userinfo['preferred_username'] 
-    userroleobj      = UserRole.objects.filter(username__username=username, org_id=org_id).values('org_id','role__role_name')
     
+    ispmu = False
+    ispra = False
+    userroleobj      = UserRole.objects.filter(username__username=username, org_id=org_id).values('org_id','role__role_name')
     if len(userroleobj) == 0:
-        context = {"Success": False, "error":"No Matching org and user found", "error_description": "No Matching org and user found"}    
+        userroleobj      = UserRole.objects.filter(username__username=username).values('org_id','role__role_name')
+        if len(userroleobj) != 0 and userroleobj[0]['role__role_name'] == 'PMU':
+            ispmu = True
+    else:
+        if userroleobj[0]['role__role_name'] == 'PRA':
+            ispra = True
+    
+    
+    if ispmu == False and ispra == False:
+        context = {"Success": False, "error":"No access for the org for this user", "error_description": "No access for the org for this user"}    
         return JsonResponse(context, safe=False)
     
     userrole         = userroleobj[0]['role__role_name']
@@ -305,8 +316,19 @@ def update_user_role(request):
     
     username         = userinfo['preferred_username'] 
     #check for username access
+    
+    ispmu = False
+    ispra = False
     userroleobj      = UserRole.objects.filter(username__username=username, org_id=org_id).values('org_id','role__role_name')
-    if len(userroleobj) == 0 or userroleobj[0]['role__role_name'] not in  ['PRA', 'PMU'] :
+    if len(userroleobj) == 0:
+        userroleobj      = UserRole.objects.filter(username__username=username).values('org_id','role__role_name')
+        if len(userroleobj) != 0 and userroleobj[0]['role__role_name'] == 'PMU':
+            ispmu = True
+    else:
+        if userroleobj[0]['role__role_name'] == 'PRA':
+            ispra = True
+            
+    if ispmu == False and ispra == False:
         context = {"Success": False, "error":"Access Denied", "error_description":"User is not Authorized"}    
         return JsonResponse(context, safe=False) 
         
@@ -341,7 +363,78 @@ def update_user_role(request):
             context = {"Success": False, "error":str(e), "error_description":str(e)}    
             return JsonResponse(context, safe=False) 
     
+    
+@csrf_exempt
+def update_dataset_owner(request):
+    
+    print ('-----------------', request.body )
+    post_data        = json.loads(request.body.decode('utf-8'))
+    access_token     = post_data.get('access_token', None)
+    dataset_id       = post_data.get('dataset_id', None)   
+    org_id           = post_data.get('org_id', None)  
+    tgt_user_name    = post_data.get('tgt_user_name', None)
+    action           = post_data.get('action', None)
+    userinfo         = get_user(access_token) 
+    
 
+    if userinfo['success'] == False:
+        context = {"Success": False, "error":userinfo['error'], "error_description":userinfo['error_description']}    
+        return JsonResponse(context, safe=False)
+    
+    if dataset_id == None:
+        context = {"Success": False, "error":"wrong dataset_id", "error_description":"dataset_id is blank"}    
+        return JsonResponse(context, safe=False)
+    
+    username         = userinfo['preferred_username'] 
+    if action == "create":
+        
+        user             = CustomUser.objects.get(username=username)  
+        newDatasetOwner  = DatasetOwner(username=user, dataset_id=dataset_id, is_owner=True)
+        newDatasetOwner.save()
+        context = {"Success": True, "comment":'Dataset owner created Successfully'}    
+        return JsonResponse(context, safe=False)
+        
+    ispmu = False
+    ispra = False
+    userroleobj      = UserRole.objects.filter(username__username=username, org_id=org_id).values('org_id','role__role_name')
+    if len(userroleobj) == 0:
+        userroleobj      = UserRole.objects.filter(username__username=username).values('org_id','role__role_name')
+        if len(userroleobj) != 0 and userroleobj[0]['role__role_name'] == 'PMU':
+            ispmu = True
+    else:
+        if userroleobj[0]['role__role_name'] == 'PRA':
+            ispra = True
+            
+    if ispmu == False and ispra == False: 
+        context = {"Success": False, "error":"access denied", "error_description":"access denied"}    
+        return JsonResponse(context, safe=False) 
+    
+    if (ispmu or ispra) and action == 'update' or action == 'delete':
+        try:
+            user             = CustomUser.objects.get(username=tgt_user_name)  
+            DatasetOwnerObjs = DatasetOwner.objects.filter(username=user, dataset_id=dataset_id)
+            DOObjCount = DatasetOwnerObjs.count()
+            if DOObjCount == 0:
+                context = {"Success": False, "error":"user and dataset doesn't exist", "error_description":"user and dataset doesn't exist"}    
+                return JsonResponse(context, safe=False)
+            else:
+                if action == 'update':  
+                    DatasetOwnerObjs.update(is_owner=False) 
+                    context = {"Success": True, "comment":'Dataset owner updated Successfully'}    
+                    return JsonResponse(context, safe=False)
+                
+                if action == 'delete':
+                    DatasetOwnerObjs.delete()
+                    context = {"Success": True, "comment":'Dataset owner deleted Successfully'}    
+                    return JsonResponse(context, safe=False)
+                    
+        except Exception as e:
+            context = {"Success": False, "error":str(e), "error_description":str(e)}    
+            return JsonResponse(context, safe=False) 
+        
+    context = {"Success": False, "error":"Invalid action", "error_description":"Invalid action"}    
+    return JsonResponse(context, safe=False) 
+        
     
 @csrf_exempt  
 def login(request):
