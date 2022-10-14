@@ -71,6 +71,7 @@ class UserRole(models.Model):
     
     username       = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     org_id         = models.CharField(max_length=100, null=True, blank=True)
+    org_title      = models.CharField(max_length=100, null=True, blank=True)
     role           = models.ForeignKey(Role, on_delete=models.CASCADE)
     
     

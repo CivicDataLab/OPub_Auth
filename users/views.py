@@ -159,10 +159,10 @@ def check_user(request):
             context = {"Success": False, "errors":response_json['data']['register']['errors']} 
             return JsonResponse(context, safe=False)
     else:
-        user_roles = UserRole.objects.filter(username__username=username).values('org_id','role__role_name')
+        user_roles = UserRole.objects.filter(username__username=username).values('org_id','org_title','role__role_name')
         user_roles_res = []
         for role in user_roles:
-            user_roles_res.append({"org_id":role['org_id'], "role":role['role__role_name']})
+            user_roles_res.append({"org_id":role['org_id'], "org_title":role['org_title'], "role":role['role__role_name']})
         context = {"Success": True, "username":username, "email":email, "access_token":access_token, "access":user_roles_res, "comment" : "User already exists"}
         return JsonResponse(context, safe=False)   
         
@@ -196,6 +196,7 @@ def create_user_role(request):
     post_data        = json.loads(request.body.decode('utf-8'))
     access_token     = post_data.get('access_token', None)
     org_id           = post_data.get('org_id', None)
+    org_title        = post_data.get('org_title', None)
     role_name        = 'PRA'
     
     userinfo         = get_user(access_token) 
@@ -213,7 +214,7 @@ def create_user_role(request):
     try:
         role             = Role.objects.get(role_name=role_name) 
         user             = CustomUser.objects.get(username=username)  
-        newUserRole      = UserRole(username=user, org_id=org_id, role=role)
+        newUserRole      = UserRole(username=user, org_id=org_id, org_title=org_title, role=role)
         
         newUserRole.save()
         context = {"Success": True, "comment":'User Role Added Successfully'}    
@@ -296,6 +297,7 @@ def update_user_role(request):
     post_data        = json.loads(request.body.decode('utf-8'))
     access_token     = post_data.get('access_token', None)
     org_id           = post_data.get('org_id', None)
+    org_title        = post_data.get('org_title', None)
     role_name        = post_data.get('role_name', None)
     tgt_user_name    = post_data.get('tgt_user_name', None)
     action           = post_data.get('action', None)
@@ -341,7 +343,7 @@ def update_user_role(request):
             UserRoleObjs     = UserRole.objects.filter(username=user, org_id=org_id)
             UserRoleObjCount = UserRoleObjs.count()
             if UserRoleObjCount == 0:
-                newUserRole      = UserRole(username=user, org_id=org_id, role=role)
+                newUserRole      = UserRole(username=user, org_id=org_id, org_title=org_title, role=role)
                 newUserRole.save()
             else:
                 UserRoleObjs.update(role=role) 
