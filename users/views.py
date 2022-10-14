@@ -1,3 +1,4 @@
+from operator import contains
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.http import Http404
@@ -41,25 +42,49 @@ def get_user(access_token):
     return userinfo
 
 @csrf_exempt
-def has_access(username, access_org_id, access_req):
+def has_access(username, access_org_id, access_data_id, access_req):
     
-    access_dict = {"PMU":['CREATE', 'UPDATE', 'DELETE', 'APPROVE', 'APPROVE PUB', 'VIEW'],
-                   "PRA":['CREATE', 'UPDATE', 'DELETE', 'APPROVE', 'VIEW'],
-                   "PR": ['CREATE', 'UPDATE', 'VIEW'],
-                   "CR": ['VIEW']}  
-    try:
-        role_obj = UserRole.objects.get(username__username=username, org_id=access_org_id)
-        role = getattr(role_obj, 'role')
-    except Exception as e:
-        return {"Success": False, "error":str(e), "error_description":str(e)}
+    # access_dict = {"PMU":['CREATE', 'UPDATE', 'DELETE', 'APPROVE', 'APPROVE PUB', 'VIEW'],
+    #                "PRA":['CREATE', 'UPDATE', 'DELETE', 'APPROVE', 'VIEW'],
+    #                "PR": ['CREATE', 'VIEW'],
+    #                "CR": ['VIEW']}  
     
-    role_access = "Available" if access_req in access_dict.get(role) else "Denied"
+    userroleobj      = UserRole.objects.filter(username__username=username, org_id=access_org_id).values('org_id','role__role_name')
+    if len(userroleobj) == 0:
+        context = {"Success": False, "error":"No Matching user found", "error_description": "No Matching user found"}    
+        return JsonResponse(context, safe=False)
+    userrole         = userroleobj[0]['role__role_name']
+    userorg          = userroleobj[0]['org_id']
     
-    if role_access == "Denied":
-        context = {"success": False, "username":username, "access_org_id":access_org_id, "role": role, "access_req":access_req, "access":role_access}
-    else:
-        context = {"success": True, "username":username, "access_org_id":access_org_id, "role": role, "access_req":access_req, "access":role_access}
-    return context
+    if userrole == 'PMU':
+        context = {"Success": True, "access_allowed":True}    
+        return JsonResponse(context, safe=False)
+    
+    if userrole == 'PRA' and userorg != None:
+        context = {"Success": True, "access_allowed":True}    
+        return JsonResponse(context, safe=False) 
+    
+    if userrole == 'PR' and userorg != None and 'create' in access_req:
+        context = {"Success": True, "access_allowed":True}    
+        return JsonResponse(context, safe=False) 
+    
+    if userrole == 'PR' and userorg != None and ('update' in access_req or 'patch' in access_req) and access_data_id != None:
+        datasetobj = DatsetOwner.objects.filter(username__username=username, dataset_id=access_data_id).values('is_owner')
+        if len(datasetobj) != 0 and datasetobj[0]['is_owner'] == True:
+            context = {"Success": True, "access_allowed":True}    
+            return JsonResponse(context, safe=False) 
+    
+    context = {"Success": True, "access_allowed":False}    
+    return JsonResponse(context, safe=False) 
+    
+    
+    # role_access = "Available" if access_req in access_dict.get(role) else "Denied"
+    
+    # if role_access == "Denied":
+    #     context = {"success": False, "username":username, "access_org_id":access_org_id, "role": role, "access_req":access_req, "access":role_access}
+    # else:
+    #     context = {"success": True, "username":username, "access_org_id":access_org_id, "role": role, "access_req":access_req, "access":role_access}
+    # return context
 
 
 # api functions
@@ -142,6 +167,7 @@ def check_user_access(request):
     post_data        = json.loads(request.body.decode('utf-8'))
     access_token     = post_data.get('access_token', None)
     access_org_id    = post_data.get('access_org_id', None)
+    access_data_id   = post_data.get('access_data_id', None)
     access_req       = post_data.get('access_req', None)
     userinfo         = get_user(access_token)  
     
@@ -151,9 +177,9 @@ def check_user_access(request):
     
     username = userinfo['preferred_username']
     
-    has_access_res   = has_access(username, access_org_id, access_req)
+    has_access_res   = has_access(username, access_org_id, access_data_id, access_req)
 
-    return JsonResponse(has_access_res, safe=False)  
+    return has_access_res  #JsonResponse(has_access_res, safe=False)  
 
 
 @csrf_exempt
