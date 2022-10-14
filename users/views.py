@@ -442,7 +442,7 @@ def get_user_count(request):
     
     users = CustomUser.objects.all().values('username')
     user_count = len(users)
-    context = {"Success": False, "user_count":user_count}    
+    context = {"Success": True, "user_count":user_count}    
     return JsonResponse(context, safe=False) 
     
         
