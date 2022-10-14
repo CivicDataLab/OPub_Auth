@@ -70,14 +70,14 @@ class RolePermission(models.Model):
 class UserRole(models.Model):
     
     username       = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    org_id         = models.CharField(max_length=100)
+    org_id         = models.CharField(max_length=100, null=True, blank=True)
     role           = models.ForeignKey(Role, on_delete=models.CASCADE)
     
     
     
     
 # dataset owner table 
-class DatsetOwner(models.Model):
+class DatasetOwner(models.Model):
     
     username       = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     dataset_id     = models.CharField(max_length=100)

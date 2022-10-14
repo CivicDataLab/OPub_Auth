@@ -48,11 +48,11 @@ class DatsetOwnerAdmin(admin.ModelAdmin):
     # readonly_fields = ('created_on','updated_on') 
 
     class Meta:
-        model = DatsetOwner
+        model = DatasetOwner
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(Permission, PermissionAdmin)
 admin.site.register(RolePermission, RolePermissionAdmin)
 admin.site.register(UserRole, UserRoleAdmin)
-admin.site.register(DatsetOwner, DatsetOwnerAdmin)
+admin.site.register(DatasetOwner, DatsetOwnerAdmin)

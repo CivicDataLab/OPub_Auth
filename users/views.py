@@ -51,8 +51,15 @@ def has_access(username, access_org_id, access_data_id, access_req):
     
     userroleobj      = UserRole.objects.filter(username__username=username, org_id=access_org_id).values('org_id','role__role_name')
     if len(userroleobj) == 0:
+        
+        userroleobj      = UserRole.objects.filter(username__username=username).values('org_id','role__role_name')
+        if len(userroleobj) != 0 and userroleobj[0]['role__role_name'] == 'PMU':
+            context = {"Success": True, "access_allowed":True}    
+            return JsonResponse(context, safe=False)
+        
         context = {"Success": False, "error":"No Matching user found", "error_description": "No Matching user found"}    
         return JsonResponse(context, safe=False)
+    
     userrole         = userroleobj[0]['role__role_name']
     userorg          = userroleobj[0]['org_id']
     
@@ -69,7 +76,7 @@ def has_access(username, access_org_id, access_data_id, access_req):
         return JsonResponse(context, safe=False) 
     
     if userrole == 'PR' and userorg != None and ('update' in access_req or 'patch' in access_req) and access_data_id != None:
-        datasetobj = DatsetOwner.objects.filter(username__username=username, dataset_id=access_data_id).values('is_owner')
+        datasetobj = DatasetOwner.objects.filter(username__username=username, dataset_id=access_data_id).values('is_owner')
         if len(datasetobj) != 0 and datasetobj[0]['is_owner'] == True:
             context = {"Success": True, "access_allowed":True}    
             return JsonResponse(context, safe=False) 
