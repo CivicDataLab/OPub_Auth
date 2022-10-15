@@ -67,15 +67,15 @@ def has_access(username, access_org_id, access_data_id, access_req):
         context = {"Success": True, "access_allowed":True}    
         return JsonResponse(context, safe=False)
     
-    if userrole == 'PRA' and userorg != None:
+    if userrole == 'DPA' and userorg != None:
         context = {"Success": True, "access_allowed":True}    
         return JsonResponse(context, safe=False) 
     
-    if userrole == 'PR' and userorg != None and 'create' in access_req:
+    if userrole == 'DP' and userorg != None and 'create' in access_req:
         context = {"Success": True, "access_allowed":True}    
         return JsonResponse(context, safe=False) 
     
-    if userrole == 'PR' and userorg != None and ('update' in access_req or 'patch' in access_req) and access_data_id != None:
+    if userrole == 'DP' and userorg != None and ('update' in access_req or 'patch' in access_req) and access_data_id != None:
         datasetobj = DatasetOwner.objects.filter(username__username=username, dataset_id=access_data_id).values('is_owner')
         if len(datasetobj) != 0 and datasetobj[0]['is_owner'] == True:
             context = {"Success": True, "access_allowed":True}    
@@ -197,7 +197,7 @@ def create_user_role(request):
     access_token     = post_data.get('access_token', None)
     org_id           = post_data.get('org_id', None)
     org_title        = post_data.get('org_title', None)
-    role_name        = 'PRA'
+    role_name        = 'DPA'
     
     userinfo         = get_user(access_token) 
 
@@ -246,7 +246,7 @@ def get_users(request):
         if len(userroleobj) != 0 and userroleobj[0]['role__role_name'] == 'PMU':
             ispmu = True
     else:
-        if userroleobj[0]['role__role_name'] == 'PRA':
+        if userroleobj[0]['role__role_name'] == 'DPA':
             ispra = True
     
     
@@ -270,14 +270,14 @@ def get_users(request):
         context = {"Success": True, "users":users_list} 
         return JsonResponse(context, safe=False)
     
-    if userrole == 'PRA' and userorg != None:
-        user_roles = UserRole.objects.filter(org_id=userorg).values('username__username','org_id','role__role_name')
+    if userrole == 'DPA' and userorg != None:
+        user_roles = UserRole.objects.filter(org_id=userorg).values('username__username','org_id', 'org_title', 'role__role_name')
         user_roles_res = {}
         for role in user_roles:
             if role['username__username'] in user_roles_res:
-                user_roles_res[role['username__username']].append({"org_id":role['org_id'], "role":role['role__role_name']})
+                user_roles_res[role['username__username']].append({"org_id":role['org_id'], "org_title":role['org_title'], "role":role['role__role_name']})
             else:
-                user_roles_res[role['username__username']] = [{"org_id":role['org_id'], "role":role['role__role_name']}]
+                user_roles_res[role['username__username']] = [{"org_id":role['org_id'], "org_title":role['org_title'], "role":role['role__role_name']}]
                 
         users_list = []
         for key, value in user_roles_res.items():
@@ -312,7 +312,7 @@ def update_user_role(request):
         context = {"Success": False, "error":"wrong org_id", "error_description":"org_id is blank"}    
         return JsonResponse(context, safe=False)
     
-    if role_name == None or role_name not in ['PRA', 'PR', 'PMU'] and action != "delete":
+    if role_name == None or role_name not in ['DPA', 'DP', 'PMU'] and action != "delete":
         context = {"Success": False, "error":"wrong role", "error_description":"role is not valid"}    
         return JsonResponse(context, safe=False)
     
@@ -327,7 +327,7 @@ def update_user_role(request):
         if len(userroleobj) != 0 and userroleobj[0]['role__role_name'] == 'PMU':
             ispmu = True
     else:
-        if userroleobj[0]['role__role_name'] == 'PRA':
+        if userroleobj[0]['role__role_name'] == 'DPA':
             ispra = True
             
     if ispmu == False and ispra == False:
@@ -404,7 +404,7 @@ def update_dataset_owner(request):
         if len(userroleobj) != 0 and userroleobj[0]['role__role_name'] == 'PMU':
             ispmu = True
     else:
-        if userroleobj[0]['role__role_name'] == 'PRA':
+        if userroleobj[0]['role__role_name'] == 'DPA':
             ispra = True
             
     if ispmu == False and ispra == False: 

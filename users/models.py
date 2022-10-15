@@ -26,8 +26,8 @@ class Role(models.Model):
     
     class Roles_enum(models.TextChoices):
         PMU             = 'PMU', _('PMU')
-        PROVIDER_ADMIN  = 'PRA', _('PROVIDER ADMIN')
-        PROVIDER        = 'PR', _('PROVIDER')
+        PROVIDER_ADMIN  = 'DPA', _('PROVIDER ADMIN')
+        PROVIDER        = 'DP', _('PROVIDER')
         CONSUMER        = 'CR', _('CONSUMER')    
     
     role_name           = models.CharField(max_length=50, choices=Roles_enum.choices, default=Roles_enum.CONSUMER, unique=True)
