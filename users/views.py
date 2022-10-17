@@ -80,11 +80,11 @@ def has_access(username, access_org_id, access_data_id, access_req):
     userorg = userroleobj[0]["org_id"]
 
     if userrole == "PMU":
-        context = {"Success": True, "access_allowed": True}
+        context = {"Success": True, "access_allowed": True, "role": "PMU"}
         return JsonResponse(context, safe=False)
 
     if userrole == "DPA" and userorg != None:
-        context = {"Success": True, "access_allowed": True}
+        context = {"Success": True, "access_allowed": True, "role": "DPA"}
         return JsonResponse(context, safe=False)
 
     if (
@@ -93,7 +93,7 @@ def has_access(username, access_org_id, access_data_id, access_req):
         and "create" in access_req
         and access_req not in ["create_dam"]
     ):
-        context = {"Success": True, "access_allowed": True}
+        context = {"Success": True, "access_allowed": True, "role": "DP"}
         return JsonResponse(context, safe=False)
 
     if (
@@ -106,7 +106,7 @@ def has_access(username, access_org_id, access_data_id, access_req):
             username__username=username, dataset_id=access_data_id
         ).values("is_owner")
         if len(datasetobj) != 0 and datasetobj[0]["is_owner"] == True:
-            context = {"Success": True, "access_allowed": True}
+            context = {"Success": True, "access_allowed": True, "role": "DP"}
             return JsonResponse(context, safe=False)
 
     context = {"Success": True, "access_allowed": False}
@@ -613,6 +613,104 @@ def get_user_count(request):
     users = CustomUser.objects.all().values("username")
     user_count = len(users)
     context = {"Success": True, "user_count": user_count}
+    return JsonResponse(context, safe=False)
+
+
+@csrf_exempt
+def get_access_datasets(request):
+
+    print("-----------------", request.body)
+    post_data = json.loads(request.body.decode("utf-8"))
+    access_token = post_data.get("access_token", None)
+    org_id = post_data.get("org_id", None)
+
+    userinfo = get_user(access_token)
+    if userinfo["success"] == False:
+        context = {
+            "Success": False,
+            "error": userinfo["error"],
+            "error_description": userinfo["error_description"],
+        }
+        return JsonResponse(context, safe=False)
+    username = userinfo["preferred_username"]
+
+    ispmu = False
+    ispra = False
+    userroleobj = UserRole.objects.filter(
+        username__username=username, org_id=org_id
+    ).values("org_id", "role__role_name")
+    if len(userroleobj) == 0:
+        userroleobj = UserRole.objects.filter(username__username=username).values(
+            "org_id", "role__role_name"
+        )
+        if len(userroleobj) != 0 and userroleobj[0]["role__role_name"] == "PMU":
+            ispmu = True
+    else:
+        if userroleobj[0]["role__role_name"] == "DPA":
+            ispra = True
+
+    if ispmu == False and ispra == False:
+        context = {
+            "Success": False,
+            "error": "No access for the org for this user",
+            "error_description": "No access for the org for this user",
+        }
+        return JsonResponse(context, safe=False)
+
+    userrole = userroleobj[0]["role__role_name"]
+    userorg = userroleobj[0]["org_id"]
+
+    if userrole == "PMU":
+        users = CustomUser.objects.all().values("username")
+        users_list = []
+        for user in users:
+            user_roles = UserRole.objects.filter(
+                username__username=user["username"]
+            ).values("org_id", "role__role_name")
+            user_roles_res = []
+            for role in user_roles:
+                user_roles_res.append(
+                    {"org_id": role["org_id"], "role": role["role__role_name"]}
+                )
+            users_list.append({"username": user["username"], "access": user_roles_res})
+
+        context = {"Success": True, "users": users_list}
+        return JsonResponse(context, safe=False)
+
+    if userrole == "DPA" and userorg != None:
+        user_roles = UserRole.objects.filter(org_id=userorg).values(
+            "username__username", "org_id", "org_title", "role__role_name"
+        )
+        user_roles_res = {}
+        for role in user_roles:
+            if role["username__username"] in user_roles_res:
+                user_roles_res[role["username__username"]].append(
+                    {
+                        "org_id": role["org_id"],
+                        "org_title": role["org_title"],
+                        "role": role["role__role_name"],
+                    }
+                )
+            else:
+                user_roles_res[role["username__username"]] = [
+                    {
+                        "org_id": role["org_id"],
+                        "org_title": role["org_title"],
+                        "role": role["role__role_name"],
+                    }
+                ]
+
+        users_list = []
+        for key, value in user_roles_res.items():
+            users_list.append({"username": key, "access": value})
+        context = {"Success": True, "users": users_list}
+        return JsonResponse(context, safe=False)
+
+    context = {
+        "Success": False,
+        "error": "No Matching org and user found",
+        "error_description": ("org is " + userorg + " and role is " + userrole),
+    }
     return JsonResponse(context, safe=False)
 
 
