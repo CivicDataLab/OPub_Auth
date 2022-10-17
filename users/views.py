@@ -87,7 +87,12 @@ def has_access(username, access_org_id, access_data_id, access_req):
         context = {"Success": True, "access_allowed": True}
         return JsonResponse(context, safe=False)
 
-    if userrole == "DP" and userorg != None and "create" in access_req:
+    if (
+        userrole == "DP"
+        and userorg != None
+        and "create" in access_req
+        and access_req not in ["create_dam"]
+    ):
         context = {"Success": True, "access_allowed": True}
         return JsonResponse(context, safe=False)
 
