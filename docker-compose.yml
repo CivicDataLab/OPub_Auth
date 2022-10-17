@@ -3,7 +3,7 @@ services:
   db:
     image: "postgres:14.4"
     restart: always
-    container_name: "opub_postgres"
+    container_name: "auth_postgres"
     environment:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
