@@ -348,30 +348,51 @@ def get_users(request):
     userorg = userroleobj[0]["org_id"]
 
     if userrole == "PMU":
-        users = CustomUser.objects.all().values("username")
+        users = CustomUser.objects.exclude(username=username).values(
+            "username", "email"
+        )
         users_list = []
         for user in users:
             user_roles = UserRole.objects.filter(
                 username__username=user["username"]
-            ).values("org_id", "role__role_name")
+            ).values("org_id", "org_title", "role__role_name")
             user_roles_res = []
             for role in user_roles:
                 user_roles_res.append(
-                    {"org_id": role["org_id"], "role": role["role__role_name"]}
+                    {
+                        "org_id": role["org_id"],
+                        "org_title": role["org_title"],
+                        "role": role["role__role_name"],
+                    }
                 )
-            users_list.append({"username": user["username"], "access": user_roles_res})
+            users_list.append(
+                {
+                    "username": user["username"],
+                    "email": user["email"],
+                    "access": user_roles_res,
+                }
+            )
 
         context = {"Success": True, "users": users_list}
         return JsonResponse(context, safe=False)
 
     if userrole == "DPA" and userorg != None:
-        user_roles = UserRole.objects.filter(org_id=userorg).values(
-            "username__username", "org_id", "org_title", "role__role_name"
+        user_roles = (
+            UserRole.objects.filter(org_id=userorg)
+            .exclude(role__role_name__in=["PMU", "DPA"])
+            .exclude(username__username=username)
+            .values(
+                "username__username",
+                "username__email",
+                "org_id",
+                "org_title",
+                "role__role_name",
+            )
         )
         user_roles_res = {}
         for role in user_roles:
             if role["username__username"] in user_roles_res:
-                user_roles_res[role["username__username"]].append(
+                user_roles_res[role["username__username"]]["access"].append(
                     {
                         "org_id": role["org_id"],
                         "org_title": role["org_title"],
@@ -379,17 +400,22 @@ def get_users(request):
                     }
                 )
             else:
-                user_roles_res[role["username__username"]] = [
-                    {
-                        "org_id": role["org_id"],
-                        "org_title": role["org_title"],
-                        "role": role["role__role_name"],
-                    }
-                ]
+                user_roles_res[role["username__username"]] = {
+                    "email": role["username__email"],
+                    "access": [
+                        {
+                            "org_id": role["org_id"],
+                            "org_title": role["org_title"],
+                            "role": role["role__role_name"],
+                        }
+                    ],
+                }
 
         users_list = []
         for key, value in user_roles_res.items():
-            users_list.append({"username": key, "access": value})
+            users_list.append(
+                {"username": key, "email": value["email"], "access": value["access"]}
+            )
         context = {"Success": True, "users": users_list}
         return JsonResponse(context, safe=False)
 
