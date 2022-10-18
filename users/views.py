@@ -483,7 +483,9 @@ def update_user_role(request):
         userroleobj = UserRole.objects.filter(username__username=username).values(
             "org_id", "role__role_name"
         )
-        if len(userroleobj) != 0 and userroleobj[0]["role__role_name"] == "PMU":
+        if len(userroleobj) != 0 and "PMU" in [
+            each["role__role_name"] for each in userroleobj
+        ]:
             ispmu = True
     else:
         if userroleobj[0]["role__role_name"] == "DPA":
