@@ -68,7 +68,7 @@ def has_access(username, access_org_id, access_data_id, access_req):
         if len(userroleobj) != 0 and "PMU" in [
             each["role__role_name"] for each in userroleobj
         ]:
-            context = {"Success": True, "access_allowed": True}
+            context = {"Success": True, "access_allowed": True, "role": "PMU"}
             return JsonResponse(context, safe=False)
 
         context = {
