@@ -488,7 +488,7 @@ def update_user_role(request):
         ]:
             ispmu = True
     else:
-        if userroleobj[0]["role__role_name"] == "DPA":
+        if "DPA" in [each["role__role_name"] for each in userroleobj]:
             ispra = True
 
     if ispmu == False and ispra == False:
