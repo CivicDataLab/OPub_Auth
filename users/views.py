@@ -745,6 +745,33 @@ def get_access_datasets(request):
 
 
 @csrf_exempt
+def get_sys_token(request):
+
+    # system config
+    sys_user = config.get("sysuser", "sys_user")
+    sys_pass = config.get("sysuser", "sys_pass")
+
+    try:
+
+        token = keycloak_openid.token(sys_user, sys_pass)
+        access_token = token["access_token"]
+        info = {
+            "success": True,
+            "access_token": access_token,
+        }
+
+    except Exception as error:
+        print(error)
+        info = {
+            "success": False,
+            "error": "Token generation failed",
+            "error_description": str(error),
+        }
+
+    return JsonResponse(info, safe=False)
+
+
+@csrf_exempt
 def login(request):
 
     post_data = json.loads(request.body.decode("utf-8"))
