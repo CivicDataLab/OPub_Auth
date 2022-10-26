@@ -1,33 +1,33 @@
 # keycloak integration
-# from keycloak import KeycloakOpenID
-# from keycloak import KeycloakAdmin
+from keycloak import KeycloakOpenID
+from keycloak import KeycloakAdmin
 
 
-# # keycloak_admin = KeycloakAdmin(server_url="https://kc.ndp.civicdatalab.in/auth/",
-# #                                username='admin',
-# #                                password='Pa55w0rd',
-# #                                realm_name="master",
-# #                                user_realm_name="only_if_other_realm_than_master",
-# #                                client_secret_key="YCsLCvO3kNIMcx6tz24jEzAmiHKxpErs",
-# #                                verify=True)
+# keycloak_admin = KeycloakAdmin(server_url="https://kc.ndp.civicdatalab.in/auth/",
+#                                username='admin',
+#                                password='Pa55w0rd',
+#                                realm_name="master",
+#                                user_realm_name="only_if_other_realm_than_master",
+#                                client_secret_key="YCsLCvO3kNIMcx6tz24jEzAmiHKxpErs",
+#                                verify=True)
 
 
-# keycloak_openid = KeycloakOpenID(
-#     server_url="https://kc.ndp.civicdatalab.in/auth/",
-#     client_id="opub-idp",
-#     realm_name="external",
-#     client_secret_key="YCsLCvO3kNIMcx6tz24jEzAmiHKxpErs",
-# )
+keycloak_openid = KeycloakOpenID(
+    server_url="https://kc.ndp.civicdatalab.in/auth/",
+    client_id="opub-idp",
+    realm_name="external",
+    client_secret_key="YCsLCvO3kNIMcx6tz24jEzAmiHKxpErs",
+)
 
-# # # Get WellKnow
-# config_well_known = keycloak_openid.well_known()
+# # Get WellKnow
+config_well_known = keycloak_openid.well_known()
 
-# token = keycloak_openid.token("abhinav", "abhinav")
-# # access_token = 'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJCdXFLSkxZRUo0azdxc2M3RHItRjRZYlY0YWVsTzNMUnEtaDZWR3ZZR0ZNIn0.eyJleHAiOjE2NjQyMjkyNzUsImlhdCI6MTY2NDIyODk3NSwianRpIjoiNDgxNGUxYzgtMjJjMy00NzM4LWIxMmMtNTJhNGIxNjViZDRjIiwiaXNzIjoiaHR0cHM6Ly9rYy5uZHAuY2l2aWNkYXRhbGFiLmluL2F1dGgvcmVhbG1zL2V4dGVybmFsIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImE3M2EyZThlLWQ3NjktNDA5OC1iNzAxLWFmMjAzN2M5OGY5ZCIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9wdWItaWRwIiwic2Vzc2lvbl9zdGF0ZSI6IjliZDU0ODg0LWU4MTgtNDg0MS1iOGMxLTI3Mjc3Y2RjMzNiNiIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLWV4dGVybmFsIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJzaWQiOiI5YmQ1NDg4NC1lODE4LTQ4NDEtYjhjMS0yNzI3N2NkYzMzYjYiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IkFiaGluYXYiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhYmhpbmF2IiwiZ2l2ZW5fbmFtZSI6IkFiaGluYXYiLCJlbWFpbCI6ImFiaGluYXZAY2l2aWNkYXRhbGFiLmluIn0.gdORLcy_9BTjzvciTjtuHF72G5p4d4U8ByBvllR4LvJV6sbdUruI1XK_lbTOCBs0Gq8gc1BxZ9tXD-i0ZE0UR18y_IZSysYBWci62tdLJ4Ou9mUgBh_14SvL0J_eGbafT4nLCMx9VQFohu_d-jjuPmodow32iZ6WGO_bHAUz6jhAxLJzEC6EMdDzKAEsTVY2DuxLTApSUH7MD9WQ6bCnpDZFofrcWtpssS3EAiWFk0HDr0vkG_74yT5GGGyS4E42EfrAnBJp3mUdZeCPF3eibHM-UYpOMH4pNVeaTl0z1qIqEA6yozDdVYA2L1SJ9fK9yDTQEQIe-qEZD0WSFmf5bA'
-# userinfo = keycloak_openid.userinfo(token["access_token"])  # (token['access_token'])
+token = keycloak_openid.token("abhinav", "abhinav")
+access_token = """eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJCdXFLSkxZRUo0azdxc2M3RHItRjRZYlY0YWVsTzNMUnEtaDZWR3ZZR0ZNIn0.eyJleHAiOjE2NjcxMDcyNDYsImlhdCI6MTY2NjY3NTI0NiwianRpIjoiZmFkNjAzMGItN2Q5Zi00YjgwLWEzNmMtZjI3NmI0N2ZjMDlmIiwiaXNzIjoiaHR0cHM6Ly9rYy5uZHAuY2l2aWNkYXRhbGFiLmluL2F1dGgvcmVhbG1zL2V4dGVybmFsIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6IjQ4M2M3Mzc3LWQzNTAtNDY2NS1iOGY5LWFkMmM4YWU3NGY0NSIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9wdWItaWRwIiwic2Vzc2lvbl9zdGF0ZSI6ImJhZGM0OWE3LWY4NjgtNGMxYS1iNjEzLTE5YWMzY2FmZDdiNSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLWV4dGVybmFsIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJzaWQiOiJiYWRjNDlhNy1mODY4LTRjMWEtYjYxMy0xOWFjM2NhZmQ3YjUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJzeXN0ZW0gc3lzdGVtIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic3lzdGVtIiwiZ2l2ZW5fbmFtZSI6InN5c3RlbSIsImZhbWlseV9uYW1lIjoic3lzdGVtIiwiZW1haWwiOiJpbmZvQGNpdmljZGF0YWxhYi5pbiJ9.GTb8TGfPdwNc0e6h4E15O_jMuNZYEy-WfsJg0Q50yTqihxnt-2dpEa7-R5hefSKdBF0QN5a7Edge9QxGCvy-MJXBzDI97Od65es2GFmicgaBXYnzXAcg5EqT8_hT6j3B1j4NN6SS91M7hiN7zFAOxCRtKfRzYRU5jVrH7tVjwq7gSUmqD797WRrGpYppHxJ92WLQaZ0EqSmf8e8GnXwfsKQoho9DUwNjGf3DOQb7Lif-xnFd9eZ-QQG49_5gdSZSvop2_bbj0xfCoNZBlAPS4qvDIM5kfS4O8SPOsfl_fa9UiWuG8yy2uE5QiWYU0b4TywclcDPopikGLS-t5mctyw"""
+userinfo = keycloak_openid.userinfo(access_token)  # (token['access_token'])
 
 
-# print(token["access_token"], userinfo)
+print(token["access_token"], userinfo)
 
 
 # decorators
@@ -179,27 +179,27 @@
 
 
 # decorator for getting sys token
-import requests
-import json
+# import requests
+# import json
 
-auth_url = "https://auth.idp.civicdatalab.in/users/get_sys_token"
+# auth_url = "https://auth.idp.civicdatalab.in/users/get_sys_token"
 
 
-def get_sys_token(func):
-    def inner(*args, **kwargs):
-        print("getting system token")
+# def get_sys_token(func):
+#     def inner(*args, **kwargs):
+#         print("getting system token")
 
-        headers = {}
-        response = requests.get(auth_url, headers=headers)
-        response_json = json.loads(response.text)
-        if response_json["success"] == False:
-            return {
-                "Success": False,
-                "error": response_json["error"],
-                "error_description": response_json["error_description"],
-            }
+#         headers = {}
+#         response = requests.get(auth_url, headers=headers)
+#         response_json = json.loads(response.text)
+#         if response_json["success"] == False:
+#             return {
+#                 "Success": False,
+#                 "error": response_json["error"],
+#                 "error_description": response_json["error_description"],
+#             }
 
-        kwargs["access_token"] = response_json["access_token"]
-        return func(*args, **kwargs)
+#         kwargs["access_token"] = response_json["access_token"]
+#         return func(*args, **kwargs)
 
-    return inner
+#     return inner

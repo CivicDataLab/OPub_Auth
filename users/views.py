@@ -101,7 +101,11 @@ def has_access(username, access_org_id, access_data_id, access_req):
     if (
         userrole == "DP"
         and userorg != None
-        and ("update" in access_req or "patch" in access_req)
+        and (
+            "update" in access_req
+            or "patch" in access_req
+            or "get_draft_datasets" in access_req
+        )
         and access_data_id != None
     ):
         datasetobj = DatasetOwner.objects.filter(
