@@ -316,6 +316,7 @@ def get_users(request):
     post_data = json.loads(request.body.decode("utf-8"))
     access_token = post_data.get("access_token", None)
     org_id = post_data.get("org_id", None)
+    user_type = post_data.get("user_type", None)
 
     userinfo = get_user(access_token)
     if userinfo["success"] == False:
@@ -353,7 +354,7 @@ def get_users(request):
     userrole = userroleobj[0]["role__role_name"]
     userorg = userroleobj[0]["org_id"]
 
-    if userrole == "PMU":
+    if userrole == "PMU" and org_id == "":
         users = CustomUser.objects.exclude(username=username).values(
             "username", "email"
         )
@@ -382,12 +383,11 @@ def get_users(request):
         context = {"Success": True, "users": users_list}
         return JsonResponse(context, safe=False)
 
-    if userrole == "DPA" and userorg != None:
+    if userrole in ["DPA", "PMU"] and org_id != "":
         user_roles = (
-            UserRole.objects.filter(org_id=userorg)
-            .exclude(role__role_name__in=["PMU", "DPA"])
-            .exclude(username__username=username)
-            .values(
+            UserRole.objects.filter(org_id=org_id, role__role_name__in=user_type)
+            # .exclude(role__role_name__in=["PMU", "DPA"])
+            .exclude(username__username=username).values(
                 "username__username",
                 "username__email",
                 "org_id",
