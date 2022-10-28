@@ -85,7 +85,13 @@ def has_access(username, access_org_id, access_data_id, access_req):
         context = {"Success": True, "access_allowed": True, "role": "PMU"}
         return JsonResponse(context, safe=False)
 
-    if userrole == "DPA" and userorg != None:
+    # request_dataset_mod
+    if (
+        userrole == "DPA"
+        and userorg != None
+        and access_req
+        not in ["approve_organization", "publish_dataset", "approve_license"]
+    ):
         context = {"Success": True, "access_allowed": True, "role": "DPA"}
         return JsonResponse(context, safe=False)
 
@@ -795,7 +801,7 @@ def get_user_info(request):
 
     except Exception as error:
         info = {
-            "success": False,
+            "Success": False,
             "error": "User Info Fetch Failed",
             "error_description": str(error),
         }
