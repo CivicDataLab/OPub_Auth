@@ -776,6 +776,34 @@ def get_sys_token(request):
 
 
 @csrf_exempt
+def get_user_info(request):
+
+    post_data = json.loads(request.body.decode("utf-8"))
+    user_name = post_data.get("user_name", None)
+
+    try:
+        users = CustomUser.objects.filter(username=user_name).values(
+            "username", "email"
+        )
+
+        context = {
+            "Success": True,
+            "username": user_name,
+            "email": users[0]["email"],
+        }
+        return JsonResponse(context, safe=False)
+
+    except Exception as error:
+        info = {
+            "success": False,
+            "error": "User Info Fetch Failed",
+            "error_description": str(error),
+        }
+
+        return JsonResponse(info, safe=False)
+
+
+@csrf_exempt
 def login(request):
 
     post_data = json.loads(request.body.decode("utf-8"))
