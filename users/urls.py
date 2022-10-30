@@ -16,4 +16,5 @@ urlpatterns = [
     path("get_access_datasets", views.get_access_datasets, name="get_access_datasets"),
     path("get_sys_token", views.get_sys_token, name="get_sys_token"),
     path("get_user_info", views.get_user_info, name="get_user_info"),
+    path("update_datasetreq", views.update_datasetreq, name="update_datasetreq"),
 ]

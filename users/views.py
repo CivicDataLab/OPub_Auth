@@ -810,6 +810,59 @@ def get_user_info(request):
 
 
 @csrf_exempt
+def update_datasetreq(request):
+
+    post_data = json.loads(request.body.decode("utf-8"))
+    access_token = post_data.get("access_token", None)
+    data_request_id = post_data.get("data_request_id", None)
+    dataset_access_model_request_id = post_data.get(
+        "dataset_access_model_request_id", None
+    )
+    dataset_access_model_id = post_data.get("dataset_access_model_id", None)
+    dataset_id = post_data.get("dataset_id", None)
+
+    userinfo = get_user(access_token)
+    if userinfo["success"] == False:
+        context = {
+            "Success": False,
+            "error": userinfo["error"],
+            "error_description": userinfo["error_description"],
+        }
+        return JsonResponse(context, safe=False)
+    username = userinfo["preferred_username"]
+
+    try:
+        user = CustomUser.objects.get(username=username)
+        DataSetReqObjs = Datasetrequest.objects.filter(
+            username=user,
+            data_request_id=data_request_id,
+            dataset_access_model_request_id=dataset_access_model_request_id,
+            dataset_access_model_id=dataset_access_model_id,
+            dataset_id=dataset_id,
+        ).values("download_count")
+
+        DataSetReqObjCount = DataSetReqObjs.count()
+        if DataSetReqObjCount == 0:
+            newDataSetReqObj = Datasetrequest(
+                username=user,
+                data_request_id=data_request_id,
+                dataset_access_model_request_id=dataset_access_model_request_id,
+                dataset_access_model_id=dataset_access_model_id,
+                dataset_id=dataset_id,
+                download_count=1,
+            )
+            newDataSetReqObj.save()
+        else:
+            download_count = DataSetReqObjs[0]["download_count"]
+            DataSetReqObjs.update(download_count=download_count + 1)
+        context = {"Success": True, "comment": "Datasetrequest updated Successfully"}
+        return JsonResponse(context, safe=False)
+    except Exception as e:
+        context = {"Success": False, "error": str(e), "error_description": str(e)}
+        return JsonResponse(context, safe=False)
+
+
+@csrf_exempt
 def login(request):
 
     post_data = json.loads(request.body.decode("utf-8"))

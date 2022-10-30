@@ -94,6 +94,17 @@ class DatasetOwner(models.Model):
     is_owner = models.BooleanField()
 
 
+# datasetreq download table
+class Datasetrequest(models.Model):
+
+    username = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    data_request_id = models.CharField(max_length=100)
+    dataset_access_model_request_id = models.CharField(max_length=100)
+    dataset_access_model_id = models.CharField(max_length=100)
+    dataset_id = models.CharField(max_length=100)
+    download_count = models.IntegerField(default=0)
+
+
 # # role_permissions
 
 # id role PermissionE
