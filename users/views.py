@@ -821,7 +821,7 @@ def update_datasetreq(request):
     )
     dataset_access_model_id = post_data.get("dataset_access_model_id", None)
     dataset_id = post_data.get("dataset_id", None)
-    username = username if username != "" else "Anonymous"
+    username = "Anonymous" if (username == "" or username == None) else username
 
 
     try:
