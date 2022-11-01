@@ -111,6 +111,7 @@ def has_access(username, access_org_id, access_data_id, access_req):
             "update" in access_req
             or "patch" in access_req
             or "get_draft_datasets" in access_req
+            or "request_dataset_review" in access_req
         )
         and access_data_id != None
     ):
