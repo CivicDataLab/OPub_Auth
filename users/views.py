@@ -814,23 +814,15 @@ def get_user_info(request):
 def update_datasetreq(request):
 
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = post_data.get("access_token", None)
+    username = post_data.get("username", "Anonymous")
     data_request_id = post_data.get("data_request_id", None)
     dataset_access_model_request_id = post_data.get(
         "dataset_access_model_request_id", None
     )
     dataset_access_model_id = post_data.get("dataset_access_model_id", None)
     dataset_id = post_data.get("dataset_id", None)
+    username = username if username != "" else "Anonymous"
 
-    userinfo = get_user(access_token)
-    if userinfo["success"] == False:
-        context = {
-            "Success": False,
-            "error": userinfo["error"],
-            "error_description": userinfo["error_description"],
-        }
-        return JsonResponse(context, safe=False)
-    username = userinfo["preferred_username"]
 
     try:
         user = CustomUser.objects.get(username=username)
