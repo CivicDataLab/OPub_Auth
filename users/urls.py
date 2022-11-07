@@ -17,4 +17,5 @@ urlpatterns = [
     path("get_sys_token", views.get_sys_token, name="get_sys_token"),
     path("get_user_info", views.get_user_info, name="get_user_info"),
     path("update_datasetreq", views.update_datasetreq, name="update_datasetreq"),
+    path("get_org_requestor", views.get_org_requestor, name="get_org_requestor"),
 ]

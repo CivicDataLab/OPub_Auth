@@ -52,36 +52,45 @@ def get_user(access_token):
 @csrf_exempt
 def has_access(username, access_org_id, access_data_id, access_req):
 
-    # access_dict = {"PMU":['CREATE', 'UPDATE', 'DELETE', 'APPROVE', 'APPROVE PUB', 'VIEW'],
-    #                "PRA":['CREATE', 'UPDATE', 'DELETE', 'APPROVE', 'VIEW'],
-    #                "PR": ['CREATE', 'VIEW'],
-    #                "CR": ['VIEW']}
+    ispmu = False
+    iscr = False
 
     userroleobj = UserRole.objects.filter(
         username__username=username, org_id=access_org_id
     ).values("org_id", "role__role_name")
+
     if len(userroleobj) == 0:
 
-        userroleobj = UserRole.objects.filter(username__username=username).values(
+        userroles = UserRole.objects.filter(username__username=username).values(
             "org_id", "role__role_name"
         )
-        if len(userroleobj) != 0 and "PMU" in [
-            each["role__role_name"] for each in userroleobj
-        ]:
-            context = {"Success": True, "access_allowed": True, "role": "PMU"}
+        if len(userroles) != 0:
+            if "PMU" in [each["role__role_name"] for each in userroles]:
+                ispmu = True
+            if "CR" in [each["role__role_name"] for each in userroles]:
+                iscr = True
+        if len(userroles) == 0:
+            context = {
+                "Success": False,
+                "error": "No Matching user found",
+                "error_description": "No Matching user found",
+            }
             return JsonResponse(context, safe=False)
 
-        context = {
-            "Success": False,
-            "error": "No Matching user found",
-            "error_description": "No Matching user found",
-        }
+    userrole = (
+        "PMU"
+        if ispmu == True
+        else "CR"
+        if iscr == True
+        else userroleobj[0]["role__role_name"]
+    )
+    userorg = "" if userrole in ["PMU", "CR"] else userroleobj[0]["org_id"]
+
+    if access_req == "query":
+        context = {"Success": True, "access_allowed": True, "role": userrole}
         return JsonResponse(context, safe=False)
 
-    userrole = userroleobj[0]["role__role_name"]
-    userorg = userroleobj[0]["org_id"]
-
-    if userrole == "PMU":
+    if ispmu == True:
         context = {"Success": True, "access_allowed": True, "role": "PMU"}
         return JsonResponse(context, safe=False)
 
@@ -124,14 +133,6 @@ def has_access(username, access_org_id, access_data_id, access_req):
 
     context = {"Success": True, "access_allowed": False}
     return JsonResponse(context, safe=False)
-
-    # role_access = "Available" if access_req in access_dict.get(role) else "Denied"
-
-    # if role_access == "Denied":
-    #     context = {"success": False, "username":username, "access_org_id":access_org_id, "role": role, "access_req":access_req, "access":role_access}
-    # else:
-    #     context = {"success": True, "username":username, "access_org_id":access_org_id, "role": role, "access_req":access_req, "access":role_access}
-    # return context
 
 
 # api functions
@@ -823,7 +824,6 @@ def update_datasetreq(request):
     dataset_id = post_data.get("dataset_id", None)
     username = "Anonymous" if (username == "" or username == None) else username
 
-
     try:
         user = CustomUser.objects.get(username=username)
         DataSetReqObjs = Datasetrequest.objects.filter(
@@ -853,6 +853,68 @@ def update_datasetreq(request):
     except Exception as e:
         context = {"Success": False, "error": str(e), "error_description": str(e)}
         return JsonResponse(context, safe=False)
+
+
+@csrf_exempt
+def get_org_requestor(request):
+
+    print("-----------------", request.body)
+    post_data = json.loads(request.body.decode("utf-8"))
+    access_token = post_data.get("access_token", None)
+    org_id = post_data.get("org_id", None)
+
+    userinfo = get_user(access_token)
+    if userinfo["success"] == False:
+        context = {
+            "Success": False,
+            "error": userinfo["error"],
+            "error_description": userinfo["error_description"],
+        }
+        return JsonResponse(context, safe=False)
+    username = userinfo["preferred_username"]
+
+    ispmu = False
+    userroleobj = UserRole.objects.filter(username__username=username).values(
+        "org_id", "role__role_name"
+    )
+    if len(userroleobj) != 0 and "PMU" in [
+        each["role__role_name"] for each in userroleobj
+    ]:
+        ispmu = True
+
+    if ispmu == False:
+        context = {
+            "Success": False,
+            "error": "Access Denied",
+            "error_description": "No access for the org for this user",
+        }
+        return JsonResponse(context, safe=False)
+
+    try:
+        org_roles = UserRole.objects.filter(
+            org_id=org_id, role__role_name__in=["DPA"]
+        ).values(
+            "username__username",
+            "username__email",
+            "org_id",
+            "org_title",
+            "role__role_name",
+        )
+        context = {
+            "Success": True,
+            "username": org_roles[0]["username__username"],
+            "email": org_roles[0]["username__email"],
+            "org_id": org_roles[0]["org_id"],
+            "org_title": org_roles[0]["org_title"],
+            "role": org_roles[0]["role__role_name"],
+        }
+    except Exception as e:
+        context = {
+            "Success": False,
+            "error": str(e),
+            "error_description": "Matching organization requestor not found",
+        }
+    return JsonResponse(context, safe=False)
 
 
 @csrf_exempt
