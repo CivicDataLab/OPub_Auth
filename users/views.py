@@ -83,6 +83,8 @@ def has_access(username, access_org_id, access_data_id, access_req):
         else "CR"
         if iscr == True
         else userroleobj[0]["role__role_name"]
+        if len(userroleobj) != 0
+        else userroles[0]["role__role_name"]
     )
     userorg = "" if userrole in ["PMU", "CR"] else userroleobj[0]["org_id"]
 
