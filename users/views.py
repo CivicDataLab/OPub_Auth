@@ -89,7 +89,11 @@ def has_access(username, access_org_id, access_data_id, access_req):
         if len(userroleobj) != 0
         else userroles[0]["role__role_name"]
     )
-    userorg = "" if userrole in ["PMU", "CR"] else userroleobj[0]["org_id"]
+    userorg = (
+        ""
+        if (userrole in ["PMU", "CR"] or len(userroleobj) == 0)
+        else userroleobj[0]["org_id"]
+    )
 
     if access_req == "query":
         context = {"Success": True, "access_allowed": True, "role": userrole}
