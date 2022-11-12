@@ -70,10 +70,13 @@ def has_access(username, access_org_id, access_data_id, access_req):
             if "CR" in [each["role__role_name"] for each in userroles]:
                 iscr = True
         if len(userroles) == 0:
+            if access_req == "query":
+                context = {"Success": True, "access_allowed": False, "role": ""}
+                return JsonResponse(context, safe=False)
             context = {
                 "Success": False,
-                "error": "No Matching user found",
-                "error_description": "No Matching user found",
+                "error": "No Matching user role found",
+                "error_description": "No Matching user role found",
             }
             return JsonResponse(context, safe=False)
 
