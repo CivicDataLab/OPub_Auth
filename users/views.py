@@ -71,7 +71,7 @@ def has_access(username, access_org_id, access_data_id, access_req):
                 iscr = True
         if len(userroles) == 0:
             if access_req == "query":
-                context = {"Success": True, "access_allowed": False, "role": ""}
+                context = {"Success": True, "access_allowed": True, "role": ""}
                 return JsonResponse(context, safe=False)
             context = {
                 "Success": False,
@@ -106,7 +106,7 @@ def has_access(username, access_org_id, access_data_id, access_req):
     # request_dataset_mod
     if (
         userrole == "DPA"
-        and userorg != None
+        and userorg != ""
         and access_req
         not in ["approve_organization", "publish_dataset", "approve_license"]
     ):
@@ -115,7 +115,7 @@ def has_access(username, access_org_id, access_data_id, access_req):
 
     if (
         userrole == "DP"
-        and userorg != None
+        and userorg != ""
         and "create" in access_req
         and access_req not in ["create_dam"]
     ):
@@ -124,7 +124,7 @@ def has_access(username, access_org_id, access_data_id, access_req):
 
     if (
         userrole == "DP"
-        and userorg != None
+        and userorg != ""
         and (
             "update" in access_req
             or "patch" in access_req
