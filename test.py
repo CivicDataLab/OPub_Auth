@@ -13,7 +13,7 @@ from keycloak import KeycloakAdmin
 
 
 keycloak_openid = KeycloakOpenID(
-    server_url="https://kc.ndp.civicdatalab.in/auth/",
+    server_url="https://dev.kc.idp.civicdatalab.in/auth/",
     client_id="opub-idp",
     realm_name="external",
     client_secret_key="YCsLCvO3kNIMcx6tz24jEzAmiHKxpErs",

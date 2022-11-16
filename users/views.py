@@ -233,7 +233,7 @@ def check_user(request):
             return JsonResponse(context, safe=False)
     else:
         user_roles = UserRole.objects.filter(username__username=username).values(
-            "org_id", "org_title", "role__role_name"
+            "org_id", "org_title", "role__role_name", "org_status"
         )
         user_roles_res = []
         for role in user_roles:
@@ -242,6 +242,7 @@ def check_user(request):
                     "org_id": role["org_id"],
                     "org_title": role["org_title"],
                     "role": role["role__role_name"],
+                    "status": role["org_status"],
                 }
             )
         context = {
@@ -459,7 +460,7 @@ def get_users(request):
         for user in users:
             user_roles = UserRole.objects.filter(
                 username__username=user["username"]
-            ).values("org_id", "org_title", "role__role_name")
+            ).values("org_id", "org_title", "role__role_name", "org_status")
             user_roles_res = []
             for role in user_roles:
                 user_roles_res.append(
@@ -467,6 +468,7 @@ def get_users(request):
                         "org_id": role["org_id"],
                         "org_title": role["org_title"],
                         "role": role["role__role_name"],
+                        "status": role["org_status"],
                     }
                 )
             users_list.append(
@@ -490,6 +492,7 @@ def get_users(request):
                 "org_id",
                 "org_title",
                 "role__role_name",
+                "org_status",
             )
         )
         user_roles_res = {}
@@ -500,6 +503,7 @@ def get_users(request):
                         "org_id": role["org_id"],
                         "org_title": role["org_title"],
                         "role": role["role__role_name"],
+                        "status": role["org_status"],
                     }
                 )
             else:
@@ -510,6 +514,7 @@ def get_users(request):
                             "org_id": role["org_id"],
                             "org_title": role["org_title"],
                             "role": role["role__role_name"],
+                            "status": role["org_status"],
                         }
                     ],
                 }
