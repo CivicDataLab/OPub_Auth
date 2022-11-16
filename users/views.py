@@ -354,7 +354,7 @@ def modify_org_status(request):
         }
         return JsonResponse(context, safe=False)
 
-    if org_status not in ["active", "inactive"]:
+    if org_status not in ["created", "approved", "rejected"]:
         context = {
             "Success": False,
             "error": "wrong status",

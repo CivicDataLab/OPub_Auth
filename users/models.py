@@ -80,8 +80,9 @@ class RolePermission(models.Model):
 # user org role table
 class UserRole(models.Model):
     class status_enum(models.TextChoices):
-        INACTIVE = "inactive", _("inactive")
-        ACTIVE = "active", _("active")
+        CREATED = "created", _("created")
+        APPROVED = "approved", _("approved")
+        REJECTED = "rejected", _("rejected")
 
     username = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     org_id = models.CharField(max_length=100, null=True, blank=True)
@@ -90,7 +91,7 @@ class UserRole(models.Model):
     org_status = models.CharField(
         max_length=100,
         choices=status_enum.choices,
-        default=status_enum.INACTIVE,
+        default=status_enum.CREATED,
     )
 
 
