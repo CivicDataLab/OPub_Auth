@@ -41,7 +41,7 @@ class RolePermissionAdmin(admin.ModelAdmin):
 
 
 class UserRoleAdmin(admin.ModelAdmin):
-    list_display = ["username", "org_id", "org_title", "role"]
+    list_display = ["username", "org_id", "org_title", "role", "org_status"]
 
     class Meta:
         model = UserRole

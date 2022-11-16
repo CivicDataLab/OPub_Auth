@@ -1,33 +1,33 @@
 # keycloak integration
-# from keycloak import KeycloakOpenID
-# from keycloak import KeycloakAdmin
+from keycloak import KeycloakOpenID
+from keycloak import KeycloakAdmin
 
 
-# # keycloak_admin = KeycloakAdmin(server_url="https://kc.ndp.civicdatalab.in/auth/",
-# #                                username='admin',
-# #                                password='Pa55w0rd',
-# #                                realm_name="master",
-# #                                user_realm_name="only_if_other_realm_than_master",
-# #                                client_secret_key="YCsLCvO3kNIMcx6tz24jEzAmiHKxpErs",
-# #                                verify=True)
+# keycloak_admin = KeycloakAdmin(server_url="https://kc.ndp.civicdatalab.in/auth/",
+#                                username='admin',
+#                                password='Pa55w0rd',
+#                                realm_name="master",
+#                                user_realm_name="only_if_other_realm_than_master",
+#                                client_secret_key="YCsLCvO3kNIMcx6tz24jEzAmiHKxpErs",
+#                                verify=True)
 
 
-# keycloak_openid = KeycloakOpenID(
-#     server_url="https://kc.ndp.civicdatalab.in/auth/",
-#     client_id="opub-idp",
-#     realm_name="external",
-#     client_secret_key="YCsLCvO3kNIMcx6tz24jEzAmiHKxpErs",
-# )
+keycloak_openid = KeycloakOpenID(
+    server_url="https://kc.ndp.civicdatalab.in/auth/",
+    client_id="opub-idp",
+    realm_name="external",
+    client_secret_key="YCsLCvO3kNIMcx6tz24jEzAmiHKxpErs",
+)
 
-# # # Get WellKnow
-# config_well_known = keycloak_openid.well_known()
+# # Get WellKnow
+config_well_known = keycloak_openid.well_known()
 
-# token = keycloak_openid.token("abhinav", "abhinav")
-# # access_token = """eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJCdXFLSkxZRUo0azdxc2M3RHItRjRZYlY0YWVsTzNMUnEtaDZWR3ZZR0ZNIn0.eyJleHAiOjE2NjcxMDcyNDYsImlhdCI6MTY2NjY3NTI0NiwianRpIjoiZmFkNjAzMGItN2Q5Zi00YjgwLWEzNmMtZjI3NmI0N2ZjMDlmIiwiaXNzIjoiaHR0cHM6Ly9rYy5uZHAuY2l2aWNkYXRhbGFiLmluL2F1dGgvcmVhbG1zL2V4dGVybmFsIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6IjQ4M2M3Mzc3LWQzNTAtNDY2NS1iOGY5LWFkMmM4YWU3NGY0NSIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9wdWItaWRwIiwic2Vzc2lvbl9zdGF0ZSI6ImJhZGM0OWE3LWY4NjgtNGMxYS1iNjEzLTE5YWMzY2FmZDdiNSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLWV4dGVybmFsIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJzaWQiOiJiYWRjNDlhNy1mODY4LTRjMWEtYjYxMy0xOWFjM2NhZmQ3YjUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJzeXN0ZW0gc3lzdGVtIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic3lzdGVtIiwiZ2l2ZW5fbmFtZSI6InN5c3RlbSIsImZhbWlseV9uYW1lIjoic3lzdGVtIiwiZW1haWwiOiJpbmZvQGNpdmljZGF0YWxhYi5pbiJ9.GTb8TGfPdwNc0e6h4E15O_jMuNZYEy-WfsJg0Q50yTqihxnt-2dpEa7-R5hefSKdBF0QN5a7Edge9QxGCvy-MJXBzDI97Od65es2GFmicgaBXYnzXAcg5EqT8_hT6j3B1j4NN6SS91M7hiN7zFAOxCRtKfRzYRU5jVrH7tVjwq7gSUmqD797WRrGpYppHxJ92WLQaZ0EqSmf8e8GnXwfsKQoho9DUwNjGf3DOQb7Lif-xnFd9eZ-QQG49_5gdSZSvop2_bbj0xfCoNZBlAPS4qvDIM5kfS4O8SPOsfl_fa9UiWuG8yy2uE5QiWYU0b4TywclcDPopikGLS-t5mctyw"""
-# userinfo = keycloak_openid.userinfo(token["access_token"])
+token = keycloak_openid.token("abhinav", "abhinav")  # ("sanjay", "abcd1234")
+# access_token = """eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJCdXFLSkxZRUo0azdxc2M3RHItRjRZYlY0YWVsTzNMUnEtaDZWR3ZZR0ZNIn0.eyJleHAiOjE2NjcxMDcyNDYsImlhdCI6MTY2NjY3NTI0NiwianRpIjoiZmFkNjAzMGItN2Q5Zi00YjgwLWEzNmMtZjI3NmI0N2ZjMDlmIiwiaXNzIjoiaHR0cHM6Ly9rYy5uZHAuY2l2aWNkYXRhbGFiLmluL2F1dGgvcmVhbG1zL2V4dGVybmFsIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6IjQ4M2M3Mzc3LWQzNTAtNDY2NS1iOGY5LWFkMmM4YWU3NGY0NSIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9wdWItaWRwIiwic2Vzc2lvbl9zdGF0ZSI6ImJhZGM0OWE3LWY4NjgtNGMxYS1iNjEzLTE5YWMzY2FmZDdiNSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLWV4dGVybmFsIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJzaWQiOiJiYWRjNDlhNy1mODY4LTRjMWEtYjYxMy0xOWFjM2NhZmQ3YjUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJzeXN0ZW0gc3lzdGVtIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic3lzdGVtIiwiZ2l2ZW5fbmFtZSI6InN5c3RlbSIsImZhbWlseV9uYW1lIjoic3lzdGVtIiwiZW1haWwiOiJpbmZvQGNpdmljZGF0YWxhYi5pbiJ9.GTb8TGfPdwNc0e6h4E15O_jMuNZYEy-WfsJg0Q50yTqihxnt-2dpEa7-R5hefSKdBF0QN5a7Edge9QxGCvy-MJXBzDI97Od65es2GFmicgaBXYnzXAcg5EqT8_hT6j3B1j4NN6SS91M7hiN7zFAOxCRtKfRzYRU5jVrH7tVjwq7gSUmqD797WRrGpYppHxJ92WLQaZ0EqSmf8e8GnXwfsKQoho9DUwNjGf3DOQb7Lif-xnFd9eZ-QQG49_5gdSZSvop2_bbj0xfCoNZBlAPS4qvDIM5kfS4O8SPOsfl_fa9UiWuG8yy2uE5QiWYU0b4TywclcDPopikGLS-t5mctyw"""
+userinfo = keycloak_openid.userinfo(token["access_token"])
 
 
-# print(token["access_token"], userinfo)
+print(token["access_token"], userinfo)
 
 
 # decorators
@@ -215,15 +215,75 @@
 #     index=pd.Index(range(3), name="idx"),
 # )
 # print(pd.io.json.build_table_schema(df, version=False))
+# import json
+# import genson
 
-import json
-import genson
 
-builder = genson.SchemaBuilder()
-jsondata = {"a": "a", "b": 1, "c": {"a": 1}}
-builder.add_object(jsondata)
+# def parse_schema(schema_dict, parent, schema):
 
-print(builder.to_schema())
+#     for key in schema_dict:
+#         if key == "required":
+#             continue
+#         print(key)
+#         if key == "items":
+#             schema.append(
+#                 {
+#                     "key": parent,
+#                     "format": "array",
+#                     "description": "",
+#                     "parent": "",
+#                     "array_field": "items",
+#                 }
+#             )
+#             parse_schema(schema_dict["items"], key, schema)
+#             continue
+#         if key == "type":
+#             continue
+
+#         if key == "properties":
+#             schema.append(
+#                 {
+#                     "key": parent,
+#                     "format": "json",
+#                     "description": "",
+#                     "parent": "",
+#                     "array_field": "",
+#                 }
+#             )
+#             parse_schema(schema_dict["properties"], parent, schema)
+#             continue
+#         if "type" in schema_dict[key] and schema_dict[key]["type"] not in [
+#             "array",
+#             "object",
+#         ]:
+#             schema.append(
+#                 {
+#                     "key": key,
+#                     "format": "string",
+#                     "description": "",
+#                     "parent": parent,
+#                     "array_field": "",
+#                 }
+#             )
+#         else:
+#             parse_schema(schema_dict[key], key, schema)
+
+
+# def abc():
+#     builder = genson.SchemaBuilder()
+#     jsondata = {"people": [{"first_name": "a", "last_name": "b"}]}
+#     # jsondata = {"people": {"first_name": "a", "last_name": "b"}}
+#     builder.add_object(jsondata)
+#     schema_dict = builder.to_schema()
+
+#     print(schema_dict)
+#     schema = []
+#     parse_schema(schema_dict["properties"], "", schema)
+#     print(schema)
+
+
+# abc()
+
 
 # a = [{"name": "a", "type": "integer"}]
 # b = {}

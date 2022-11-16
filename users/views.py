@@ -327,6 +327,86 @@ def create_user_role(request):
 
 
 @csrf_exempt
+def modify_org_status(request):
+
+    print("-----------------", request.body)
+    post_data = json.loads(request.body.decode("utf-8"))
+    access_token = post_data.get("access_token", None)
+    org_id = post_data.get("org_id", None)
+    org_status = post_data.get("org_status", None)
+
+    userinfo = get_user(access_token)
+
+    if userinfo["success"] == False:
+        context = {
+            "Success": False,
+            "error": userinfo["error"],
+            "error_description": userinfo["error_description"],
+        }
+        return JsonResponse(context, safe=False)
+
+    if org_id == None:
+        context = {
+            "Success": False,
+            "error": "wrong org_id",
+            "error_description": "org_id is blank",
+        }
+        return JsonResponse(context, safe=False)
+
+    if org_status not in ["active", "inactive"]:
+        context = {
+            "Success": False,
+            "error": "wrong status",
+            "error_description": "please send correct status",
+        }
+        return JsonResponse(context, safe=False)
+
+    username = userinfo["preferred_username"]
+
+    ispmu = False
+    ispra = False
+    userroleobj = UserRole.objects.filter(
+        username__username=username, org_id=org_id
+    ).values("org_id", "role__role_name")
+    if len(userroleobj) == 0:
+        userroleobj = UserRole.objects.filter(username__username=username).values(
+            "org_id", "role__role_name"
+        )
+        if len(userroleobj) != 0 and "PMU" in [
+            each["role__role_name"] for each in userroleobj
+        ]:
+            ispmu = True
+    else:
+        if "DPA" in [each["role__role_name"] for each in userroleobj]:
+            ispra = True
+
+    if ispmu == False:
+        context = {
+            "Success": False,
+            "error": "Access Denied",
+            "error_description": "User is not Authorized",
+        }
+        return JsonResponse(context, safe=False)
+
+    try:
+        UserRoleObjs = UserRole.objects.filter(org_id=org_id)
+        UserRoleObjCount = UserRoleObjs.count()
+        if UserRoleObjCount == 0:
+            context = {
+                "Success": False,
+                "error": "no matching org found",
+                "error_description": "please send correct org_id",
+            }
+            return JsonResponse(context, safe=False)
+        UserRoleObjs.update(org_status=org_status)
+        context = {"Success": True, "comment": "org status updated successfully"}
+        return JsonResponse(context, safe=False)
+    except Exception as e:
+        context = {"Success": False, "error": str(e), "error_description": str(e)}
+        return JsonResponse(context, safe=False)
+
+
+@csrf_exempt
 def get_users(request):
 
     print("-----------------", request.body)

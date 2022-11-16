@@ -79,11 +79,19 @@ class RolePermission(models.Model):
 
 # user org role table
 class UserRole(models.Model):
+    class status_enum(models.TextChoices):
+        INACTIVE = "inactive", _("inactive")
+        ACTIVE = "active", _("active")
 
     username = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     org_id = models.CharField(max_length=100, null=True, blank=True)
     org_title = models.CharField(max_length=100, null=True, blank=True)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    org_status = models.CharField(
+        max_length=100,
+        choices=status_enum.choices,
+        default=status_enum.INACTIVE,
+    )
 
 
 # dataset owner table
@@ -103,16 +111,3 @@ class Datasetrequest(models.Model):
     dataset_access_model_id = models.CharField(max_length=100)
     dataset_id = models.CharField(max_length=100)
     download_count = models.IntegerField(default=0)
-
-
-# # role_permissions
-
-# id role PermissionE
-# 1 pA   create datset
-# 2 pa   reveie request
-
-
-# username, datsetid, owner_bool - access - edit dataset
-
-
-#  username, role, org_id, permission
