@@ -13,7 +13,7 @@ from keycloak import KeycloakAdmin
 
 
 keycloak_openid = KeycloakOpenID(
-    server_url="https://dev.kc.idp.civicdatalab.in/auth/",
+    server_url="https://kc.ndp.civicdatalab.in/auth/",
     client_id="opub-idp",
     realm_name="external",
     client_secret_key="YCsLCvO3kNIMcx6tz24jEzAmiHKxpErs",
@@ -291,3 +291,39 @@ print(token["access_token"], userinfo)
 #     b[each["name"]] = {"type": each["type"]}
 
 # print(b)
+
+
+# data = [
+#     {"b": [1, 2, 3], "c": {"b": 1, "c2": 2}, "d": 2},
+#     {"b": [1, 2, 3], "c": {"b": 1, "c2": 2}, "d": 2},
+# ]
+
+
+# def remove_a_key(d, remove_key):
+
+#     for key in list(d.keys()):
+#         if key in remove_key:
+#             del d[key]
+#         else:
+#             skip_col(d[key], remove_key)
+
+
+# def skip_col(d, remove_key):
+#     if isinstance(d, dict):
+#         remove_a_key(d, remove_key)
+#     if isinstance(d, list):
+#         for each in d:
+#             if isinstance(each, dict):
+#                 remove_a_key(each, remove_key)
+
+#     return d
+
+
+# def abcd():
+#     data = {"a": {"b": [1, 2, 3], "c": {"b": 1, "c2": 2}, "d": 2}}
+#     res = skip_col(data, ["b"])
+
+#     print(res)
+
+
+# abcd()

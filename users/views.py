@@ -1012,6 +1012,42 @@ def get_org_requestor(request):
 
 
 @csrf_exempt
+def get_user_orgs(request):
+
+    print("-----------------", request.body)
+    post_data = json.loads(request.body.decode("utf-8"))
+    access_token = post_data.get("access_token", None)
+
+    userinfo = get_user(access_token)
+    if userinfo["success"] == False:
+        context = {
+            "Success": False,
+            "error": userinfo["error"],
+            "error_description": userinfo["error_description"],
+        }
+        return JsonResponse(context, safe=False)
+    username = userinfo["preferred_username"]
+
+    try:
+        userroleobj = UserRole.objects.filter(username__username=username).values(
+            "org_id", "role__role_name"
+        )
+        orgs = []
+        for roles in userroleobj:
+            if roles["org_id"] != None:
+                orgs.append(roles["org_id"])
+
+        context = {"Success": True, "orgs": orgs}
+    except Exception as e:
+        context = {
+            "Success": False,
+            "error": str(e),
+            "error_description": "Matching organization requestor not found",
+        }
+    return JsonResponse(context, safe=False)
+
+
+@csrf_exempt
 def login(request):
 
     post_data = json.loads(request.body.decode("utf-8"))
