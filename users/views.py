@@ -459,8 +459,10 @@ def get_users(request):
         users_list = []
         for user in users:
             user_roles = UserRole.objects.filter(
-                username__username=user["username"]
+                username__username=user["username"], role__role_name__in=user_type
             ).values("org_id", "org_title", "role__role_name", "org_status")
+            if len(user_roles) == 0:
+                continue
             user_roles_res = []
             for role in user_roles:
                 user_roles_res.append(
