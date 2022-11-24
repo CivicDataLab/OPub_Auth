@@ -369,7 +369,7 @@ def modify_org_status(request):
     userroleobj = UserRole.objects.filter(
         username__username=username, org_id=org_id
     ).values("org_id", "role__role_name")
-    if len(userroleobj) == 0:
+    if len(userroleobj) == 0 or True:
         userroleobj = UserRole.objects.filter(username__username=username).values(
             "org_id", "role__role_name"
         )
