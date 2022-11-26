@@ -333,7 +333,7 @@ def modify_org_status(request):
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
     access_token = post_data.get("access_token", None)
-    org_id = post_data.get("org_id", None)
+    org_list = post_data.get("org_list", None)
     org_status = post_data.get("org_status", None)
 
     userinfo = get_user(access_token)
@@ -346,11 +346,11 @@ def modify_org_status(request):
         }
         return JsonResponse(context, safe=False)
 
-    if org_id == None:
+    if len(org_list) == 0:
         context = {
             "Success": False,
             "error": "wrong org_id",
-            "error_description": "org_id is blank",
+            "error_description": "org_list is blank",
         }
         return JsonResponse(context, safe=False)
 
@@ -367,7 +367,7 @@ def modify_org_status(request):
     ispmu = False
     ispra = False
     userroleobj = UserRole.objects.filter(
-        username__username=username, org_id=org_id
+        username__username=username, org_id__in=org_list
     ).values("org_id", "role__role_name")
     if len(userroleobj) == 0 or True:
         userroleobj = UserRole.objects.filter(username__username=username).values(
@@ -390,13 +390,13 @@ def modify_org_status(request):
         return JsonResponse(context, safe=False)
 
     try:
-        UserRoleObjs = UserRole.objects.filter(org_id=org_id)
+        UserRoleObjs = UserRole.objects.filter(org_id__in=org_list)
         UserRoleObjCount = UserRoleObjs.count()
         if UserRoleObjCount == 0:
             context = {
                 "Success": False,
                 "error": "no matching org found",
-                "error_description": "please send correct org_id",
+                "error_description": "please send correct org_list",
             }
             return JsonResponse(context, safe=False)
         UserRoleObjs.update(org_status=org_status)
