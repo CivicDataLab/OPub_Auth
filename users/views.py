@@ -854,6 +854,35 @@ def get_access_datasets(request):
 
 
 @csrf_exempt
+def get_user_datasets(request):
+
+    print("-----------------", request.body)
+    post_data = json.loads(request.body.decode("utf-8"))
+    access_token = post_data.get("access_token", None)
+
+    userinfo = get_user(access_token)
+    if userinfo["success"] == False:
+        context = {
+            "Success": False,
+            "error": userinfo["error"],
+            "error_description": userinfo["error_description"],
+        }
+        return JsonResponse(context, safe=False)
+    username = userinfo["preferred_username"]
+
+
+    user_datasets = list(DatasetOwner.objects.filter(username__username=username).values_list(
+        "dataset_id", flat=True
+    ))
+    
+    context = {
+        "Success": True,
+        "datasets": user_datasets,
+    }
+    return JsonResponse(context, safe=False)
+
+
+@csrf_exempt
 def get_sys_token(request):
 
     # system config
