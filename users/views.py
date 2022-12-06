@@ -607,7 +607,7 @@ def update_user_role(request):
             "error_description": "User is not Authorized",
         }
         return JsonResponse(context, safe=False)
-
+    #TO Do: mark status as "approved" if update if new role create
     if action == "update":
         try:
             role = Role.objects.get(role_name=role_name)
@@ -617,11 +617,12 @@ def update_user_role(request):
             UserRoleObjCount = UserRoleObjs.count()
             if UserRoleObjCount == 0:
                 newUserRole = UserRole(
-                    username=user, org_id=org_id, org_title=org_title, role=role
+                    username=user, org_id=org_id, org_title=org_title, role=role, org_status="approved"
                 )
                 newUserRole.save()
             else:
                 UserRoleObjs.update(role=role)
+                UserRoleObjs.update(org_status="approved")
             context = {"Success": True, "comment": "User Role Added Successfully"}
             return JsonResponse(context, safe=False)
         except Exception as e:
