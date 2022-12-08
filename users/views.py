@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 import ast
 from configparser import ConfigParser
 from .models import *
+import os
 
 config = ConfigParser()
 config.read("config.ini")
@@ -18,18 +19,18 @@ config.read("config.ini")
 
 # configure keycloak client
 keycloak_openid = KeycloakOpenID(
-    server_url=config.get("keycloak", "server_url"),
-    client_id=config.get("keycloak", "client_id"),
-    realm_name=config.get("keycloak", "realm_name"),
-    client_secret_key=config.get("keycloak", "client_secret_key"),
+    server_url=os.environ.get('KEYCLOAK_URL', config.get("keycloak", "server_url")),
+    client_id=os.environ.get('KEYCLOAK_CLIENT_ID', config.get("keycloak", "client_id")),
+    realm_name=os.environ.get('KEYCLOAK_REALM_NAME', config.get("keycloak", "realm_name")),
+    client_secret_key=os.environ.get('KEYCLOAK_SECRET', config.get("keycloak", "client_secret_key")),
 )
 config_well_known = keycloak_openid.well_known()
 
 
-# graphql config
-password = config.get("graphql", "password")
-auth_url = config.get("graphql", "base_url")
 
+# graphql config
+password = os.environ.get('USER_PASS', config.get("graphql", "password"))
+auth_url = os.environ.get('AUTH_GRAPHQL_URL', config.get("graphql", "base_url"))
 
 # util functions
 @csrf_exempt
@@ -887,8 +888,8 @@ def get_user_datasets(request):
 def get_sys_token(request):
 
     # system config
-    sys_user = config.get("sysuser", "sys_user")
-    sys_pass = config.get("sysuser", "sys_pass")
+    sys_user = os.environ.get('SYSTEM_USER', config.get("sysuser", "sys_user")),
+    sys_pass = os.environ.get('SYSTEM_USER_PASS', config.get("sysuser", "sys_pass")),
 
     try:
 
