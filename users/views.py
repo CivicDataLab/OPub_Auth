@@ -117,7 +117,7 @@ def has_access(username, access_org_id, access_data_id, access_req):
     if (
         userrole == "DP"
         and userorg != ""
-        and "create" in access_req
+        and (("create" in access_req) or (access_req in ["list_review_request"]))
         and access_req not in ["create_dam"]
     ):
         context = {"Success": True, "access_allowed": True, "role": "DP"}
