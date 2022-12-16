@@ -1,4 +1,4 @@
-# keycloak integration
+# # # # keycloak integration
 from keycloak import KeycloakOpenID
 from keycloak import KeycloakAdmin
 
@@ -13,18 +13,16 @@ from keycloak import KeycloakAdmin
 
 
 keycloak_openid = KeycloakOpenID(
-    server_url="https://kc.ndp.civicdatalab.in/auth/",
+    server_url="https://dev.kc.idp.civicdatalab.in/auth/",
     client_id="opub-idp",
     realm_name="external",
     client_secret_key="YCsLCvO3kNIMcx6tz24jEzAmiHKxpErs",
 )
 
 # # Get WellKnow
-config_well_known = keycloak_openid.well_known()
+# config_well_known = keycloak_openid.well_known()
 
-token = keycloak_openid.token(
-    "abhinav@civicdatalab.in", "abcd1234"
-)  # ("sanjay", "abcd1234")
+token = keycloak_openid.token("abhinav", "abhinav")  # ("sanjay", "abcd1234")
 # access_token = """eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJCdXFLSkxZRUo0azdxc2M3RHItRjRZYlY0YWVsTzNMUnEtaDZWR3ZZR0ZNIn0.eyJleHAiOjE2NjcxMDcyNDYsImlhdCI6MTY2NjY3NTI0NiwianRpIjoiZmFkNjAzMGItN2Q5Zi00YjgwLWEzNmMtZjI3NmI0N2ZjMDlmIiwiaXNzIjoiaHR0cHM6Ly9rYy5uZHAuY2l2aWNkYXRhbGFiLmluL2F1dGgvcmVhbG1zL2V4dGVybmFsIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6IjQ4M2M3Mzc3LWQzNTAtNDY2NS1iOGY5LWFkMmM4YWU3NGY0NSIsInR5cCI6IkJlYXJlciIsImF6cCI6Im9wdWItaWRwIiwic2Vzc2lvbl9zdGF0ZSI6ImJhZGM0OWE3LWY4NjgtNGMxYS1iNjEzLTE5YWMzY2FmZDdiNSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLWV4dGVybmFsIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJzaWQiOiJiYWRjNDlhNy1mODY4LTRjMWEtYjYxMy0xOWFjM2NhZmQ3YjUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJzeXN0ZW0gc3lzdGVtIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic3lzdGVtIiwiZ2l2ZW5fbmFtZSI6InN5c3RlbSIsImZhbWlseV9uYW1lIjoic3lzdGVtIiwiZW1haWwiOiJpbmZvQGNpdmljZGF0YWxhYi5pbiJ9.GTb8TGfPdwNc0e6h4E15O_jMuNZYEy-WfsJg0Q50yTqihxnt-2dpEa7-R5hefSKdBF0QN5a7Edge9QxGCvy-MJXBzDI97Od65es2GFmicgaBXYnzXAcg5EqT8_hT6j3B1j4NN6SS91M7hiN7zFAOxCRtKfRzYRU5jVrH7tVjwq7gSUmqD797WRrGpYppHxJ92WLQaZ0EqSmf8e8GnXwfsKQoho9DUwNjGf3DOQb7Lif-xnFd9eZ-QQG49_5gdSZSvop2_bbj0xfCoNZBlAPS4qvDIM5kfS4O8SPOsfl_fa9UiWuG8yy2uE5QiWYU0b4TywclcDPopikGLS-t5mctyw"""
 userinfo = keycloak_openid.userinfo(token["access_token"])
 
@@ -52,11 +50,14 @@ print(token["access_token"], userinfo)
 # op = (operate1(inc, 5))
 # print (op(7))
 
+
 # def make_pretty(func):
 #     def inner():
 #         print("I got decorated")
 #         func()
+
 #     return inner
+
 
 # @make_pretty
 # def ordinary():
@@ -66,6 +67,7 @@ print(token["access_token"], userinfo)
 # # ordinary = (make_pretty(ordinary))
 # ordinary()
 
+
 # def smart_divide(func):
 #     def inner(*args, **kwargs):
 #         print("I am going to divide", args[0], "and", args[1])
@@ -74,14 +76,16 @@ print(token["access_token"], userinfo)
 #             return
 
 #         return func(*args, **kwargs)
+
 #     return inner
 
 
 # @smart_divide
 # def divide(a, b):
-#     return a/b
+#     return a / b
 
-# print(divide(4,2))
+
+# print(divide(4, 0))
 
 # # decorator for getting username
 # import requests
@@ -160,8 +164,8 @@ print(token["access_token"], userinfo)
 # query = f"""
 #         mutation {{
 #             register(
-#             email: "new_user2@email.com",
-#             username: "new_user2",
+#             email: "new_user3@email.com",
+#             username: "new_user3@email.com",
 #             password1: "supersecretpassword",
 #             password2: "supersecretpassword",
 #         ) {{
@@ -174,7 +178,11 @@ print(token["access_token"], userinfo)
 
 
 # headers = {}
-# response = requests.post('http://127.0.0.1:8000/graphql', json = {"query": query},  headers=headers)
+# response = requests.post(
+#     "https://dev.auth.idp.civicdatalab.in/graphql",
+#     json={"query": query},
+#     headers=headers,
+# )
 
 # response_json = json.loads(response.text)
 # print(response_json)
@@ -270,18 +278,77 @@ print(token["access_token"], userinfo)
 #         else:
 #             parse_schema(schema_dict[key], key, schema)
 
+# def parse_schema(schema_dict, parent, schema, currentpath):
+#     global count
+#     for key in schema_dict:
+#         if key == "required":
+#             continue
+#         # print(key)
+#         if key == "items":
+#             # print(count)
+#             count = count + 1
+#             # print(count)
+#             schema.append(
+#                 {
+#                     "key": parent + str(count) if parent == "items" else parent,
+#                     "format": "array",
+#                     "description": "",
+#                     "parent": "",
+#                     "array_field": "items" + str(count),
+#                     "path": currentpath + "." + parent + str(count) if parent == "items" else parent
+#                 }
+#             )
+#             parse_schema(schema_dict["items"], key, schema, currentpath + "." + parent + str(count) if parent == "items" else parent)
+#             continue
+#         if key == "type":
+#             continue
+
+#         if key == "properties":
+#             schema.append(
+#                 {
+#                     "key": parent + str(count) if parent == "items" else parent,
+#                     "format": "json",
+#                     "description": "",
+#                     "parent": "",
+#                     "array_field": "",
+#                     "path": currentpath + "." + parent + str(count) if parent == "items" else parent
+#                 }
+#             )
+#             parse_schema(schema_dict["properties"], parent, schema, currentpath + "." + parent + str(count) if parent == "items" else parent)
+#             continue
+#         if "type" in schema_dict[key] and schema_dict[key]["type"] not in [
+#             "array",
+#             "object",
+#         ]:
+#             schema.append(
+#                 {
+#                     "key": key,
+#                     "format": "string",
+#                     "description": "",
+#                     "parent": parent + str(count) if parent == "items" else parent,
+#                     "array_field": "",
+#                     "path": currentpath + "." + key
+#                 }
+#             )
+#         else:
+#             parse_schema(schema_dict[key], key, schema, currentpath + "." + parent + "." + key )
+
 
 # def abc():
 #     builder = genson.SchemaBuilder()
-#     jsondata = {"people": [{"first_name": "a", "last_name": "b"}]}
+#     jsondata = [{"people": [{"first_name": "a", "last_name": {"l1": 1, "l2":2}}]}]
 #     # jsondata = {"people": {"first_name": "a", "last_name": "b"}}
+#     # jsondata = {}
 #     builder.add_object(jsondata)
 #     schema_dict = builder.to_schema()
+#     global count
+#     count = 0
+#     currentpath = "."
 
 #     print(schema_dict)
 #     schema = []
-#     parse_schema(schema_dict["properties"], "", schema)
-#     print(schema)
+#     parse_schema(schema_dict.get("properties", schema_dict.get("items", {}).get("properties", {})), "", schema, currentpath)
+#     print('-------------', schema)
 
 
 # abc()
@@ -327,3 +394,47 @@ print(token["access_token"], userinfo)
 
 
 # abcd()
+
+
+# import requests
+# import json
+
+
+# query = f"""
+#         {{
+#         data_request(data_request_id: "03d376a1-82ac-4dff-b441-0546e7842da8") {{
+#             id
+#             status
+#             resource {{
+#                 id
+#                 schema_exists
+#             }}
+#             parameters
+#         }}
+#     }}
+#     """
+
+
+# headers = {}
+# response = requests.post('https://idpbe.civicdatalab.in/graphql', json = {"query": query},  headers=headers)
+
+# response_json = json.loads(response.text)
+# print(response_json)
+import pandas as pd
+
+data = { 
+  "name": ["Sally", "Mary", "John"],
+  "age": [50, 40, 30]
+}
+
+df = pd.DataFrame(data)
+schema_list = pd.io.json.build_table_schema(df, version=False)
+schema_list = schema_list.get("fields", [])
+print(schema_list)
+for each in schema_list[1:]:
+    print (each)
+# print (df)
+# df.to_csv('t1.csv', index=False)
+# df1 = df[(df['age']>35) &  (df['name']=="Sally")]
+# print (df1)
+# print(df.query('age > 35 and name == "Sally"'))

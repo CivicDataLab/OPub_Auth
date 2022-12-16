@@ -56,7 +56,7 @@ for each in datajson["states"]:
 
         headers = {}
         response = requests.post(
-            "https://idpbe.civicdatalab.in/graphql",
+            "https://dev.backend.idp.civicdatalab.in/graphql",
             json={"query": query},
             headers=headers,
         )
@@ -84,7 +84,7 @@ for each in datajson["states"]:
 
             headers = {}
             response = requests.post(
-                "https://idpbe.civicdatalab.in/graphql",
+                "https://dev.backend.idp.civicdatalab.in/graphql",
                 json={"query": query},
                 headers=headers,
             )
