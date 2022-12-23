@@ -1063,7 +1063,7 @@ def get_user_orgs(request):
     username = userinfo["preferred_username"]
 
     try:
-        userroleobj = UserRole.objects.filter(username__username=username).values(
+        userroleobj = UserRole.objects.filter(username__username=username, role__role_name="DPA").values(
             "org_id", "role__role_name"
         )
         orgs = []
