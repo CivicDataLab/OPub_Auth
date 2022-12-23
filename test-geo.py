@@ -46,8 +46,8 @@ for each in datajson["states"]:
     try:
         query = f"""
                 mutation {{
-                    create_geography(
-                    geography_data: {{name:"{each["state"]["state_name"]}"}},
+                    update_geography(
+                    geography_data: {{name:"{each["state"]["state_name"]}", official_id:"{each["state"]["state_id"]}"}},
                 ) {{
                     success,
                     errors
@@ -56,13 +56,34 @@ for each in datajson["states"]:
 
         headers = {}
         response = requests.post(
-            "https://dev.backend.idp.civicdatalab.in/graphql",
+            "https://idpbe.civicdatalab.in/graphql",
             json={"query": query},
             headers=headers,
         )
 
         response_json = json.loads(response.text)
         print(response_json)
+        
+        if  "errors" in response_json:
+            
+            query = f"""
+                    mutation {{
+                        create_geography(
+                        geography_data: {{name:"{each["state"]["state_name"]}", official_id:"{each["state"]["state_id"]}"}},
+                    ) {{
+                        success,
+                        errors
+                    }}
+            }}"""
+            headers = {}
+            response = requests.post(
+                "https://idpbe.civicdatalab.in/graphql",
+                json={"query": query},
+                headers=headers,
+            )
+
+            response_json = json.loads(response.text)
+            print(response_json)
 
         district = each["state"]["state_id"]
         district_url = f"http://vocab.nic.in/rest.php/district/{district.lower()}/json"
@@ -74,8 +95,8 @@ for each in datajson["states"]:
         for dist in dist_data["districts"]:
             query = f"""
                     mutation {{
-                        create_geography(
-                        geography_data: {{name:"{dist["district"]["district_name"]}"}},
+                        update_geography(
+                        geography_data: {{name:"{dist["district"]["district_name"]}", official_id:"{dist["district"]["district_id"]}"}},
                     ) {{
                         success,
                         errors
@@ -84,12 +105,33 @@ for each in datajson["states"]:
 
             headers = {}
             response = requests.post(
-                "https://dev.backend.idp.civicdatalab.in/graphql",
+                "https://idpbe.civicdatalab.in/graphql",
                 json={"query": query},
                 headers=headers,
             )
 
             response_json = json.loads(response.text)
             print(response_json)
+            
+            if  "errors" in response_json:
+                
+                query = f"""
+                        mutation {{
+                            create_geography(
+                            geography_data:  {{name:"{dist["district"]["district_name"]}", official_id:"{dist["district"]["district_id"]}"}},
+                        ) {{
+                            success,
+                            errors
+                        }}
+                }}"""
+                headers = {}
+                response = requests.post(
+                    "https://idpbe.civicdatalab.in/graphql",
+                    json={"query": query},
+                    headers=headers,
+                )
+
+                response_json = json.loads(response.text)
+                print(response_json)            
     except Exception as e:
         print(e)

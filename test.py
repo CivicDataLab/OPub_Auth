@@ -420,19 +420,19 @@ print(token["access_token"], userinfo)
 
 # response_json = json.loads(response.text)
 # print(response_json)
-import pandas as pd
+# import pandas as pd
 
-data = { 
-  "name": ["Sally", "Mary", "John"],
-  "age": [50, 40, 30]
-}
+# data = { 
+#   "name": ["Sally", "Mary", "John"],
+#   "age": [50, 40, 30]
+# }
 
-df = pd.DataFrame(data)
-schema_list = pd.io.json.build_table_schema(df, version=False)
-schema_list = schema_list.get("fields", [])
-print(schema_list)
-for each in schema_list[1:]:
-    print (each)
+# df = pd.DataFrame(data)
+# schema_list = pd.io.json.build_table_schema(df, version=False)
+# schema_list = schema_list.get("fields", [])
+# print(schema_list)
+# for each in schema_list[1:]:
+#     print (each)
 # print (df)
 # df.to_csv('t1.csv', index=False)
 # df1 = df[(df['age']>35) &  (df['name']=="Sally")]

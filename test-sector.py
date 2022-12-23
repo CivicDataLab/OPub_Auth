@@ -63,12 +63,13 @@ import json
 # print(response_json)
 
 
-for each in datajson["sectors"]:
+for index,each in enumerate(datajson["sectors"]):
+    
     try:
         query = f"""
                 mutation {{
-                    create_sector(
-                    sector_data: {{name:"{each}", description:"{each}"}},
+                    update_sector(
+                    sector_data: {{name:"{each}", official_id:"{index}"}},
                 ) {{
                     success,
                     errors
@@ -77,13 +78,38 @@ for each in datajson["sectors"]:
 
         headers = {}
         response = requests.post(
-            "https://dev.backend.idp.civicdatalab.in/graphql",
+            "https://idpbe.civicdatalab.in/graphql",
             json={"query": query},
             headers=headers,
         )
 
         response_json = json.loads(response.text)
-        print(response_json)
+        print(response_json, index)
 
-    except Exception as e:
-        print(e)
+    except Exception as update_e:
+        print('--------error', update_e)
+       
+    if  "errors" in response_json:   
+        try:
+            query = f"""
+                    mutation {{
+                        create_sector(
+                        sector_data: {{name:"{each}", description:"{each}", official_id:"{index}"}},
+                    ) {{
+                        success,
+                        errors
+                    }}
+            }}"""
+
+            headers = {}
+            response = requests.post(
+                "https://idpbe.civicdatalab.in/graphql",
+                json={"query": query},
+                headers=headers,
+            )
+
+            response_json = json.loads(response.text)
+            print(response_json)
+
+        except Exception as create_e:
+            print('--------error', create_e)
