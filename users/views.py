@@ -151,8 +151,7 @@ def has_access(username, access_org_id, access_data_id, access_req):
 def verify_user_token(request):
 
     print("-----------------", request.body)
-    post_data = json.loads(request.body.decode("utf-8"))
-    access_token = post_data.get("access_token", None)
+    access_token = request.META.get("access_token", None)
     userinfo = get_user(access_token)
 
     return JsonResponse(userinfo, safe=False)
@@ -160,8 +159,7 @@ def verify_user_token(request):
 
 @csrf_exempt
 def check_user(request):
-    post_data = json.loads(request.body.decode("utf-8"))
-    access_token = post_data.get("access_token", None)
+    access_token = request.META.get("access_token", None)
     userinfo = get_user(access_token)
 
     if userinfo["success"] == False:
@@ -263,7 +261,7 @@ def check_user_access(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = post_data.get("access_token", None)
+    access_token = request.META.get("access_token", None)
     access_org_id = post_data.get("access_org_id", None)
     access_data_id = post_data.get("access_data_id", None)
     access_req = post_data.get("access_req", None)
@@ -289,7 +287,7 @@ def create_user_role(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = post_data.get("access_token", None)
+    access_token = request.META.get("access_token", None)
     org_id = post_data.get("org_id", None)
     org_title = post_data.get("org_title", None)
     role_name = "DPA"
@@ -334,7 +332,7 @@ def modify_org_status(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = post_data.get("access_token", None)
+    access_token = request.META.get("access_token", None)
     org_list = post_data.get("org_list", None)
     org_status = post_data.get("org_status", None)
 
@@ -414,7 +412,7 @@ def get_users(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = post_data.get("access_token", None)
+    access_token = request.META.get("access_token", None)
     org_id = post_data.get("org_id", None)
     user_type = post_data.get("user_type", None)
 
@@ -544,7 +542,7 @@ def update_user_role(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = post_data.get("access_token", None)
+    access_token = request.META.get("access_token", None)
     org_id = post_data.get("org_id", None)
     org_title = post_data.get("org_title", None)
     role_name = post_data.get("role_name", None)
@@ -648,7 +646,7 @@ def update_dataset_owner(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = post_data.get("access_token", None)
+    access_token = request.META.get("access_token", None)
     dataset_id = post_data.get("dataset_id", None)
     org_id = post_data.get("org_id", None)
     tgt_user_name = post_data.get("tgt_user_name", None)
@@ -762,7 +760,7 @@ def get_access_datasets(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = post_data.get("access_token", None)
+    access_token = request.META.get("access_token", None)
     org_id = post_data.get("org_id", None)
 
     userinfo = get_user(access_token)
@@ -859,8 +857,7 @@ def get_access_datasets(request):
 def get_user_datasets(request):
 
     print("-----------------", request.body)
-    post_data = json.loads(request.body.decode("utf-8"))
-    access_token = post_data.get("access_token", None)
+    access_token = request.META.get("access_token", None)
 
     userinfo = get_user(access_token)
     if userinfo["success"] == False:
@@ -988,7 +985,7 @@ def get_org_requestor(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = post_data.get("access_token", None)
+    access_token = request.META.get("access_token", None)
     org_id = post_data.get("org_id", None)
 
     userinfo = get_user(access_token)
@@ -1049,8 +1046,7 @@ def get_org_requestor(request):
 def get_user_orgs(request):
 
     print("-----------------", request.body)
-    post_data = json.loads(request.body.decode("utf-8"))
-    access_token = post_data.get("access_token", None)
+    access_token = request.META.get("access_token", None)
 
     userinfo = get_user(access_token)
     if userinfo["success"] == False:
