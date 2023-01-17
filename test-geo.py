@@ -89,7 +89,8 @@ for each in datajson["states"]:
         district_url = f"http://vocab.nic.in/rest.php/district/{district.lower()}/json"
         print(district_url)
 
-        resp = requests.get("http://vocab.nic.in/rest.php/district/tn/json")
+        # resp = requests.get("http://vocab.nic.in/rest.php/district/tn/json")
+        resp = requests.get(district_url)
         dist_data = resp.json()
 
         for dist in dist_data["districts"]:
