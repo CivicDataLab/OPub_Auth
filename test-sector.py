@@ -37,16 +37,16 @@ import json
 # query = f"""
 #         mutation {{
 #             create_sector(
-#             sector_data: {{name:"Finance1", description:"Finance1"},
+#             sector_data: {{name:"Finance1", description:"Finance1",official_id:"123"}},
 #         ) {{
 #             success,
 #             errors
-#         }
-# }"""
+#         }}
+# }}"""
 
 # headers = {}
 # response = requests.post(
-#     "https://dev.backend.idp.civicdatalab.in/graphql",
+#     "https://idpbe.civicdatalab.in/graphql",
 #     json={"query": query},
 #     headers=headers,
 # )
@@ -61,12 +61,12 @@ for index,each in enumerate(datajson["sectors"]):
         query = f"""
                 mutation {{
                     update_sector(
-                    sector_data: {{name:"{each["name"]}", description:"{each["description"]}", official_id:"{index}"},
+                    sector_data: {{name:"{each["name"]}", description:"{each["description"][0:100]}", official_id:"{index}"}},
                 ) {{
                     success,
                     errors
-                }
-        }"""
+                }}
+        }}"""
 
         headers = {}
         response = requests.post(
@@ -86,12 +86,12 @@ for index,each in enumerate(datajson["sectors"]):
             query = f"""
                     mutation {{
                         create_sector(
-                        sector_data: {{name:"{each["name"]}", description:"{each["description"]}", official_id:"{index}"},
+                        sector_data: {{name:"{each["name"]}", description:"{each["description"][0:100]}", official_id:"{index}"}},
                     ) {{
                         success,
                         errors
-                    }
-            }"""
+                    }}
+            }}"""
 
             headers = {}
             response = requests.post(
