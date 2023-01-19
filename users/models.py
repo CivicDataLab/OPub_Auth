@@ -7,6 +7,7 @@ from django.db import models
 
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
+from datetime import datetime
 
 
 # user table
@@ -93,6 +94,8 @@ class UserRole(models.Model):
         choices=status_enum.choices,
         default=status_enum.CREATED,
     )
+    added   = models.DateTimeField(null=True, auto_now_add=True)
+    updated = models.DateTimeField(null=True, auto_now=True)
 
 
 # dataset owner table

@@ -473,6 +473,7 @@ def get_users(request):
                         "org_title": role["org_title"],
                         "role": role["role__role_name"],
                         "status": role["org_status"],
+                        "updated": role["updated"],
                     }
                 )
             users_list.append(
@@ -497,6 +498,7 @@ def get_users(request):
                 "org_title",
                 "role__role_name",
                 "org_status",
+                "updated",
             )
         )
         user_roles_res = {}
@@ -508,6 +510,7 @@ def get_users(request):
                         "org_title": role["org_title"],
                         "role": role["role__role_name"],
                         "status": role["org_status"],
+                        "updated": role["updated"],
                     }
                 )
             else:
@@ -519,6 +522,7 @@ def get_users(request):
                             "org_title": role["org_title"],
                             "role": role["role__role_name"],
                             "status": role["org_status"],
+                            "updated": role["updated"],
                         }
                     ],
                 }
