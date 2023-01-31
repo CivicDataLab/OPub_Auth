@@ -70,7 +70,7 @@ for index,each in enumerate(datajson["sectors"]):
 
         headers = {}
         response = requests.post(
-            "https://idpbe.civicdatalab.in/graphql",
+            "http://idp-backend.nic.in/graphql",
             json={"query": query},
             headers=headers,
         )
@@ -95,7 +95,7 @@ for index,each in enumerate(datajson["sectors"]):
 
             headers = {}
             response = requests.post(
-                "https://idpbe.civicdatalab.in/graphql",
+                "https://idp-backend.nic.in/graphql",
                 json={"query": query},
                 headers=headers,
             )
