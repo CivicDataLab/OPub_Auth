@@ -61,7 +61,7 @@ for index,each in enumerate(datajson["sectors"]):
         query = f"""
                 mutation {{
                     update_sector(
-                    sector_data: {{name:"{each["name"]}", description:"{each["description"][0:100]}", official_id:"{index}"}},
+                    sector_data: {{name:"{each["name"]}", description:"{each["description"]}", official_id:"{index}"}},
                 ) {{
                     success,
                     errors
@@ -86,7 +86,7 @@ for index,each in enumerate(datajson["sectors"]):
             query = f"""
                     mutation {{
                         create_sector(
-                        sector_data: {{name:"{each["name"]}", description:"{each["description"][0:100]}", official_id:"{index}"}},
+                        sector_data: {{name:"{each["name"]}", description:"{each["description"]}", official_id:"{index}"}},
                     ) {{
                         success,
                         errors
