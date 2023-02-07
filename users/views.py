@@ -59,6 +59,9 @@ def has_access(username, access_org_id, access_data_id, access_req):
     userroleobj = UserRole.objects.filter(
         username__username=username, org_id=access_org_id
     ).values("org_id", "role__role_name")
+    
+    if "PMU" in [each["role__role_name"] for each in userroleobj]:
+        ispmu = True    
 
     if len(userroleobj) == 0:
 
