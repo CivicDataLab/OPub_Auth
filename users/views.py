@@ -553,6 +553,7 @@ def update_user_role(request):
     post_data = json.loads(request.body.decode("utf-8"))
     access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
     org_id = post_data.get("org_id", None)
+    org_parent_id = post_data.get("org_parent_id", None)
     org_title = post_data.get("org_title", None)
     role_name = post_data.get("role_name", None)
     tgt_user_name  = post_data.get("tgt_user_name", None)
@@ -626,12 +627,14 @@ def update_user_role(request):
             UserRoleObjCount = UserRoleObjs.count()
             if UserRoleObjCount == 0:
                 newUserRole = UserRole(
-                    username=user, org_id=org_id, org_title=org_title, role=role, org_status="approved"
+                    username=user, org_id=org_id, org_parent_id=org_parent_id, org_title=org_title, role=role, org_status="approved"
                 )
                 newUserRole.save()
             else:
                 UserRoleObjs.update(role=role)
                 UserRoleObjs.update(org_status="approved")
+                UserRoleObjs.update(org_parent_id=org_parent_id)
+                UserRoleObjs.update(org_title=org_title)
             context = {"Success": True, "comment": "User Role Updated/Added Successfully"}
             return JsonResponse(context, safe=False)
         except Exception as e:

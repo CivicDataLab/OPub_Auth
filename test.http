@@ -107,7 +107,8 @@ access-token: eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJCdXFLSkxZRUo0az
 
 {
    "org_id":"568",
-   "org_title":"a test",
+   "org_parent_id":"563",
+   "org_title":"a test child",
    "tgt_user_name":"user1",
    "tgt_user_email":"user1@email.com",
    "role_name":"DPA",
