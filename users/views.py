@@ -555,7 +555,8 @@ def update_user_role(request):
     org_id = post_data.get("org_id", None)
     org_title = post_data.get("org_title", None)
     role_name = post_data.get("role_name", None)
-    tgt_user_name = post_data.get("tgt_user_name", None)
+    tgt_user_name  = post_data.get("tgt_user_name", None)
+    tgt_user_email = post_data.get("tgt_user_email", None)
     action = post_data.get("action", None)
 
     userinfo = get_user(access_token)
@@ -619,7 +620,7 @@ def update_user_role(request):
     if action == "update":
         try:
             role = Role.objects.get(role_name=role_name)
-            user = CustomUser.objects.get(username=tgt_user_name)
+            user = CustomUser.objects.get(username=tgt_user_name) if (tgt_user_email == None or tgt_user_email == "") else CustomUser.objects.get(email=tgt_user_email)
 
             UserRoleObjs = UserRole.objects.filter(username=user, org_id=org_id)
             UserRoleObjCount = UserRoleObjs.count()
@@ -631,7 +632,7 @@ def update_user_role(request):
             else:
                 UserRoleObjs.update(role=role)
                 UserRoleObjs.update(org_status="approved")
-            context = {"Success": True, "comment": "User Role Added Successfully"}
+            context = {"Success": True, "comment": "User Role Updated/Added Successfully"}
             return JsonResponse(context, safe=False)
         except Exception as e:
             context = {"Success": False, "error": str(e), "error_description": str(e)}
