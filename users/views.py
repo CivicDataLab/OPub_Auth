@@ -1120,10 +1120,11 @@ def filter_orgs_without_dpa(request):
         orgs_without_dpa = [id for id in org_list if id not in orgs_with_dpa]
         orgs_without_dpa_details = UserRole.objects.filter(org_id__in=orgs_without_dpa).values("org_id",  "org_title")
         
+        response_data = []
         for org in orgs_without_dpa_details:
-            orgs_without_dpa.append({"org_id": org["org_id"], "org_title": org["org_title"]})
+            response_data.append({"org_id": org["org_id"], "org_title": org["org_title"]})
         
-        context = {"Success": True, "org_without_dpa": orgs_without_dpa}
+        context = {"Success": True, "org_without_dpa": response_data}
         return JsonResponse(context, safe=False)
     except Exception as e:
         context = {"Success": False, "error": str(e), "error_description": str(e)}
