@@ -1098,6 +1098,38 @@ def get_user_orgs(request):
     return JsonResponse(context, safe=False)
 
 
+
+@csrf_exempt
+def filter_orgs_without_dpa(request):
+
+    print("-----------------", request.body)
+    post_data = json.loads(request.body.decode("utf-8"))
+    # access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
+    org_list = post_data.get("org_list", None)
+    
+    if len(org_list) == 0:
+        context = {
+            "Success": False,
+            "error": "wrong org_id",
+            "error_description": "org_list is blank",
+        }
+        return JsonResponse(context, safe=False)
+
+    try:
+        orgs_with_dpa = list(UserRole.objects.filter(org_id__in=org_list, role__role_name="DPA").values_list("org_id",  flat=True))
+        orgs_without_dpa = [id for id in org_list if id not in orgs_with_dpa]
+        orgs_without_dpa_details = UserRole.objects.filter(org_id__in=orgs_without_dpa).values("org_id",  "org_title")
+        
+        for org in orgs_without_dpa_details:
+            orgs_without_dpa.append({"org_id": org["org_id"], "org_title": org["org_title"]})
+        
+        context = {"Success": True, "org_without_dpa": orgs_without_dpa}
+        return JsonResponse(context, safe=False)
+    except Exception as e:
+        context = {"Success": False, "error": str(e), "error_description": str(e)}
+        return JsonResponse(context, safe=False)
+
+
 @csrf_exempt
 def login(request):
 
