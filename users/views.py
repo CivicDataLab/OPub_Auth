@@ -1122,7 +1122,7 @@ def filter_orgs_without_dpa(request):
         
         response_data = []
         for org in orgs_without_dpa_details:
-            response_data.append({"org_id": org["org_id"], "org_title": org["org_title"]})
+            response_data.append(org["org_id"])
         
         context = {"Success": True, "org_without_dpa": response_data}
         return JsonResponse(context, safe=False)
