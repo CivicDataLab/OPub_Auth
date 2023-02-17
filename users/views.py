@@ -1062,27 +1062,33 @@ def get_user_orgs(request):
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
     access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
+    user_email   = post_data.get("user_email", None)
 
     userinfo = get_user(access_token)
-    if userinfo["success"] == False:
+    if userinfo["success"] == False and access_token != None:
         context = {
             "Success": False,
             "error": userinfo["error"],
             "error_description": userinfo["error_description"],
         }
         return JsonResponse(context, safe=False)
-    username = userinfo["preferred_username"]
+    username = userinfo.get("preferred_username", None)
+    
 
     try:
-        userroleobj = UserRole.objects.filter(username__username=username, role__role_name="DPA").values(
-            "org_id", "role__role_name"
+        user = CustomUser.objects.get(email=user_email) if (username == None or username == "") else CustomUser.objects.get(username=username)
+
+        userroleobj = UserRole.objects.filter(username=user, role__role_name="DPA").values(
+            "org_id", "role__role_name", "org_title"
         )
         orgs = []
+        org_details = []
         for roles in userroleobj:
             if roles["org_id"] != None:
                 orgs.append(roles["org_id"])
+                org_details.append({"org_id": roles["org_id"], "org_title": roles["org_title"]})
 
-        context = {"Success": True, "orgs": orgs}
+        context = {"Success": True, "orgs": orgs, "org_details": org_details}
     except Exception as e:
         context = {
             "Success": False,
