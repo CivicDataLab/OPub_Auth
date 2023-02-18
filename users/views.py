@@ -12,6 +12,7 @@ import ast
 from configparser import ConfigParser
 from .models import *
 import os
+from users.utils import utils
 
 config = ConfigParser()
 config.read("config.ini")
@@ -19,18 +20,21 @@ config.read("config.ini")
 
 # configure keycloak client
 keycloak_openid = KeycloakOpenID(
-    server_url=os.environ.get('KEYCLOAK_URL', config.get("keycloak", "server_url")),
-    client_id=os.environ.get('KEYCLOAK_CLIENT_ID', config.get("keycloak", "client_id")),
-    realm_name=os.environ.get('KEYCLOAK_REALM_NAME', config.get("keycloak", "realm_name")),
-    client_secret_key=os.environ.get('KEYCLOAK_SECRET', config.get("keycloak", "client_secret_key")),
+    server_url=os.environ.get("KEYCLOAK_URL", config.get("keycloak", "server_url")),
+    client_id=os.environ.get("KEYCLOAK_CLIENT_ID", config.get("keycloak", "client_id")),
+    realm_name=os.environ.get(
+        "KEYCLOAK_REALM_NAME", config.get("keycloak", "realm_name")
+    ),
+    client_secret_key=os.environ.get(
+        "KEYCLOAK_SECRET", config.get("keycloak", "client_secret_key")
+    ),
 )
 config_well_known = keycloak_openid.well_known()
 
 
-
 # graphql config
-password = os.environ.get('USER_PASS', config.get("graphql", "password"))
-auth_url = os.environ.get('AUTH_GRAPHQL_URL', config.get("graphql", "base_url"))
+password = os.environ.get("USER_PASS", config.get("graphql", "password"))
+auth_url = os.environ.get("AUTH_GRAPHQL_URL", config.get("graphql", "base_url"))
 
 # util functions
 @csrf_exempt
@@ -59,9 +63,9 @@ def has_access(username, access_org_id, access_data_id, access_req):
     userroleobj = UserRole.objects.filter(
         username__username=username, org_id=access_org_id
     ).values("org_id", "role__role_name")
-    
+
     if "PMU" in [each["role__role_name"] for each in userroleobj]:
-        ispmu = True    
+        ispmu = True
 
     if len(userroleobj) == 0:
 
@@ -155,7 +159,9 @@ def verify_user_token(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
+    access_token = request.META.get(
+        "HTTP_ACCESS_TOKEN", post_data.get("access_token", None)
+    )
     userinfo = get_user(access_token)
 
     return JsonResponse(userinfo, safe=False)
@@ -164,7 +170,9 @@ def verify_user_token(request):
 @csrf_exempt
 def check_user(request):
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
+    access_token = request.META.get(
+        "HTTP_ACCESS_TOKEN", post_data.get("access_token", None)
+    )
     userinfo = get_user(access_token)
 
     if userinfo["success"] == False:
@@ -266,7 +274,9 @@ def check_user_access(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
+    access_token = request.META.get(
+        "HTTP_ACCESS_TOKEN", post_data.get("access_token", None)
+    )
     access_org_id = post_data.get("access_org_id", None)
     access_data_id = post_data.get("access_data_id", None)
     access_req = post_data.get("access_req", None)
@@ -292,7 +302,9 @@ def create_user_role(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
+    access_token = request.META.get(
+        "HTTP_ACCESS_TOKEN", post_data.get("access_token", None)
+    )
     org_id = post_data.get("org_id", None)
     org_title = post_data.get("org_title", None)
     role_name = "DPA"
@@ -337,7 +349,9 @@ def modify_org_status(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
+    access_token = request.META.get(
+        "HTTP_ACCESS_TOKEN", post_data.get("access_token", None)
+    )
     org_list = post_data.get("org_list", None)
     org_status = post_data.get("org_status", None)
 
@@ -417,7 +431,9 @@ def get_users(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
+    access_token = request.META.get(
+        "HTTP_ACCESS_TOKEN", post_data.get("access_token", None)
+    )
     org_id = post_data.get("org_id", None)
     user_type = post_data.get("user_type", None)
 
@@ -551,12 +567,14 @@ def update_user_role(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
+    access_token = request.META.get(
+        "HTTP_ACCESS_TOKEN", post_data.get("access_token", None)
+    )
     org_id = post_data.get("org_id", None)
     org_parent_id = post_data.get("org_parent_id", None)
     org_title = post_data.get("org_title", None)
     role_name = post_data.get("role_name", None)
-    tgt_user_name  = post_data.get("tgt_user_name", None)
+    tgt_user_name = post_data.get("tgt_user_name", None)
     tgt_user_email = post_data.get("tgt_user_email", None)
     action = post_data.get("action", None)
 
@@ -592,23 +610,30 @@ def update_user_role(request):
 
     username = userinfo["preferred_username"]
     # check for username access
-
     ispmu = False
     ispra = False
-    userroleobj = UserRole.objects.filter(
-        username__username=username, org_id=org_id
-    ).values("org_id", "role__role_name")
-    if len(userroleobj) == 0:
-        userroleobj = UserRole.objects.filter(username__username=username).values(
-            "org_id", "role__role_name"
-        )
-        if len(userroleobj) != 0 and "PMU" in [
-            each["role__role_name"] for each in userroleobj
-        ]:
-            ispmu = True
-    else:
-        if "DPA" in [each["role__role_name"] for each in userroleobj]:
-            ispra = True
+    isdp = False
+    iscr = False
+    calling_user = CustomUser.objects.get(username=username)
+    ispmu, ispra, isdp, iscr = utils.check_user_role(calling_user, org_id)
+    print(ispmu, ispra, isdp, iscr)
+
+    # ispmu = False
+    # ispra = False
+    # userroleobj = UserRole.objects.filter(
+    #     username__username=username, org_id=org_id
+    # ).values("org_id", "role__role_name")
+    # if len(userroleobj) == 0:
+    #     userroleobj = UserRole.objects.filter(username__username=username).values(
+    #         "org_id", "role__role_name"
+    #     )
+    #     if len(userroleobj) != 0 and "PMU" in [
+    #         each["role__role_name"] for each in userroleobj
+    #     ]:
+    #         ispmu = True
+    # else:
+    #     if "DPA" in [each["role__role_name"] for each in userroleobj]:
+    #         ispra = True
 
     if ispmu == False and ispra == False:
         context = {
@@ -617,17 +642,26 @@ def update_user_role(request):
             "error_description": "User is not Authorized",
         }
         return JsonResponse(context, safe=False)
-    #TO Do: mark status as "approved" if update if new role create
+    # TO Do: mark status as "approved" if update if new role create
     if action == "update":
         try:
             role = Role.objects.get(role_name=role_name)
-            user = CustomUser.objects.get(username=tgt_user_name) if (tgt_user_email == None or tgt_user_email == "") else CustomUser.objects.get(email=tgt_user_email)
+            user = (
+                CustomUser.objects.get(username=tgt_user_name)
+                if (tgt_user_email == None or tgt_user_email == "")
+                else CustomUser.objects.get(email=tgt_user_email)
+            )
 
             UserRoleObjs = UserRole.objects.filter(username=user, org_id=org_id)
             UserRoleObjCount = UserRoleObjs.count()
             if UserRoleObjCount == 0:
                 newUserRole = UserRole(
-                    username=user, org_id=org_id, org_parent_id=org_parent_id, org_title=org_title, role=role, org_status="approved"
+                    username=user,
+                    org_id=org_id,
+                    org_parent_id=org_parent_id,
+                    org_title=org_title,
+                    role=role,
+                    org_status="approved",
                 )
                 newUserRole.save()
             else:
@@ -635,7 +669,10 @@ def update_user_role(request):
                 UserRoleObjs.update(org_status="approved")
                 UserRoleObjs.update(org_parent_id=org_parent_id)
                 UserRoleObjs.update(org_title=org_title)
-            context = {"Success": True, "comment": "User Role Updated/Added Successfully"}
+            context = {
+                "Success": True,
+                "comment": "User Role Updated/Added Successfully",
+            }
             return JsonResponse(context, safe=False)
         except Exception as e:
             context = {"Success": False, "error": str(e), "error_description": str(e)}
@@ -659,7 +696,9 @@ def update_dataset_owner(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
+    access_token = request.META.get(
+        "HTTP_ACCESS_TOKEN", post_data.get("access_token", None)
+    )
     dataset_id = post_data.get("dataset_id", None)
     org_id = post_data.get("org_id", None)
     tgt_user_name = post_data.get("tgt_user_name", None)
@@ -773,7 +812,9 @@ def get_access_datasets(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
+    access_token = request.META.get(
+        "HTTP_ACCESS_TOKEN", post_data.get("access_token", None)
+    )
     org_id = post_data.get("org_id", None)
 
     userinfo = get_user(access_token)
@@ -871,7 +912,9 @@ def get_user_datasets(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
+    access_token = request.META.get(
+        "HTTP_ACCESS_TOKEN", post_data.get("access_token", None)
+    )
 
     userinfo = get_user(access_token)
     if userinfo["success"] == False:
@@ -883,11 +926,12 @@ def get_user_datasets(request):
         return JsonResponse(context, safe=False)
     username = userinfo["preferred_username"]
 
+    user_datasets = list(
+        DatasetOwner.objects.filter(username__username=username).values_list(
+            "dataset_id", flat=True
+        )
+    )
 
-    user_datasets = list(DatasetOwner.objects.filter(username__username=username).values_list(
-        "dataset_id", flat=True
-    ))
-    
     context = {
         "Success": True,
         "datasets": user_datasets,
@@ -899,8 +943,8 @@ def get_user_datasets(request):
 def get_sys_token(request):
 
     # system config
-    sys_user = os.environ.get('SYSTEM_USER', config.get("sysuser", "sys_user")),
-    sys_pass = os.environ.get('SYSTEM_USER_PASS', config.get("sysuser", "sys_pass")),
+    sys_user = (os.environ.get("SYSTEM_USER", config.get("sysuser", "sys_user")),)
+    sys_pass = (os.environ.get("SYSTEM_USER_PASS", config.get("sysuser", "sys_pass")),)
 
     try:
 
@@ -999,7 +1043,9 @@ def get_org_requestor(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
+    access_token = request.META.get(
+        "HTTP_ACCESS_TOKEN", post_data.get("access_token", None)
+    )
     org_id = post_data.get("org_id", None)
 
     userinfo = get_user(access_token)
@@ -1061,8 +1107,10 @@ def get_user_orgs(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
-    user_email   = post_data.get("user_email", None)
+    access_token = request.META.get(
+        "HTTP_ACCESS_TOKEN", post_data.get("access_token", None)
+    )
+    user_email = post_data.get("user_email", None)
 
     userinfo = get_user(access_token)
     if userinfo["success"] == False and access_token != None:
@@ -1073,20 +1121,25 @@ def get_user_orgs(request):
         }
         return JsonResponse(context, safe=False)
     username = userinfo.get("preferred_username", None)
-    
 
     try:
-        user = CustomUser.objects.get(email=user_email) if (username == None or username == "") else CustomUser.objects.get(username=username)
-
-        userroleobj = UserRole.objects.filter(username=user, role__role_name="DPA").values(
-            "org_id", "role__role_name", "org_title"
+        user = (
+            CustomUser.objects.get(email=user_email)
+            if (username == None or username == "")
+            else CustomUser.objects.get(username=username)
         )
+
+        userroleobj = UserRole.objects.filter(
+            username=user, role__role_name="DPA"
+        ).values("org_id", "role__role_name", "org_title")
         orgs = []
         org_details = []
         for roles in userroleobj:
             if roles["org_id"] != None:
                 orgs.append(roles["org_id"])
-                org_details.append({"org_id": roles["org_id"], "org_title": roles["org_title"]})
+                org_details.append(
+                    {"org_id": roles["org_id"], "org_title": roles["org_title"]}
+                )
 
         context = {"Success": True, "orgs": orgs, "org_details": org_details}
     except Exception as e:
@@ -1098,15 +1151,14 @@ def get_user_orgs(request):
     return JsonResponse(context, safe=False)
 
 
-
 @csrf_exempt
 def filter_orgs_without_dpa(request):
 
     print("-----------------", request.body)
     post_data = json.loads(request.body.decode("utf-8"))
-    # access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None)) 
+    # access_token = request.META.get("HTTP_ACCESS_TOKEN", post_data.get("access_token", None))
     org_list = post_data.get("org_list", None)
-    
+
     if len(org_list) == 0:
         context = {
             "Success": False,
@@ -1116,9 +1168,13 @@ def filter_orgs_without_dpa(request):
         return JsonResponse(context, safe=False)
 
     try:
-        orgs_with_dpa = list(UserRole.objects.filter(org_id__in=org_list, role__role_name="DPA").values_list("org_id",  flat=True))
+        orgs_with_dpa = list(
+            UserRole.objects.filter(
+                org_id__in=org_list, role__role_name="DPA"
+            ).values_list("org_id", flat=True)
+        )
         orgs_without_dpa = [id for id in org_list if id not in orgs_with_dpa]
-        
+
         context = {"Success": True, "org_without_dpa": orgs_without_dpa}
         return JsonResponse(context, safe=False)
     except Exception as e:

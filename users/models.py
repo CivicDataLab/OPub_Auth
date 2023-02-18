@@ -95,7 +95,7 @@ class UserRole(models.Model):
         choices=status_enum.choices,
         default=status_enum.CREATED,
     )
-    added   = models.DateTimeField(null=True, auto_now_add=True)
+    added = models.DateTimeField(null=True, auto_now_add=True)
     updated = models.DateTimeField(null=True, auto_now=True)
 
 
