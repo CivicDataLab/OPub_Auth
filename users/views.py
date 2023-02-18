@@ -1180,6 +1180,90 @@ def filter_orgs_without_dpa(request):
     except Exception as e:
         context = {"Success": False, "error": str(e), "error_description": str(e)}
         return JsonResponse(context, safe=False)
+    
+    
+
+@csrf_exempt
+def get_org_providers(request):
+
+    print("-----------------", request.body)
+    post_data = json.loads(request.body.decode("utf-8"))
+    access_token = request.META.get(
+        "HTTP_ACCESS_TOKEN", post_data.get("access_token", None)
+    )
+    org_id = post_data.get("org_id", None)
+
+    userinfo = get_user(access_token)
+    if userinfo["success"] == False:
+        context = {
+            "Success": False,
+            "error": userinfo["error"],
+            "error_description": userinfo["error_description"],
+        }
+        return JsonResponse(context, safe=False)
+    username = userinfo["preferred_username"]
+    
+    
+    if org_id == None or org_id == "":
+        context = {
+            "Success": False,
+            "error": "wrong org_id",
+            "error_description": "org_id is blank",
+        }
+        return JsonResponse(context, safe=False)    
+
+    # check for username access
+    ispmu = False
+    isdpa = False
+    isdp = False
+    iscr = False
+    calling_user = CustomUser.objects.get(username=username)
+    ispmu, isdpa, isdp, iscr = utils.check_user_role(calling_user, org_id)
+    print(ispmu, isdpa, isdp, iscr)
+
+    if ispmu == False and isdpa == False:
+        context = {
+            "Success": False,
+            "error": "No access for the org for this user",
+            "error_description": "No access for the org for this user",
+        }
+        return JsonResponse(context, safe=False)
+
+
+    if (ispmu or isdpa):
+        
+        try:
+            child_org_list_without_dpa = []
+            child_org_list_without_dpa = utils.get_child_orgs_without_dpa(org_id, child_org_list_without_dpa)
+            child_org_list_without_dpa.append(org_id)
+            print (child_org_list_without_dpa)
+            dp_roles = UserRole.objects.filter(org_id__in=child_org_list_without_dpa, role__role_name="DP")
+
+            dp_list = []
+            for role in dp_roles:
+                dp_list.append({"username": role.username.username,
+                            "email": role.username.email, 
+                            "org_id": role.org_id,
+                            "org_title": role.org_title,
+                            "role": role.role.role_name,
+                            "status": role.org_status,
+                            "updated": role.updated,
+                            })
+
+            context = {"Success": True, "providers": dp_list}
+            return JsonResponse(context, safe=False)
+        except Exception as e:
+            context = {"Success": False, "error": str(e), "error_description": str(e)}
+            return JsonResponse(context, safe=False)
+    
+
+    context = {
+        "Success": False,
+        "error": "No Providers found",
+        "error_description": "No Providers found",
+    }
+    return JsonResponse(context, safe=False)
+    
 
 
 @csrf_exempt

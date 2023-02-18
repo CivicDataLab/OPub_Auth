@@ -22,4 +22,5 @@ urlpatterns = [
     path("get_org_requestor", views.get_org_requestor, name="get_org_requestor"),
     path("get_user_orgs", views.get_user_orgs, name="get_user_orgs"),
     path("filter_orgs_without_dpa", views.filter_orgs_without_dpa, name="filter_orgs_without_dpa"),
+    path("get_org_providers", views.get_org_providers, name="get_org_providers"),
 ]

@@ -45,3 +45,17 @@ def is_usr_parent_org_dpa(calling_user, org_id, isdpa=False):
             isdpa = is_usr_parent_org_dpa(calling_user, parent_org_id, isdpa)
 
     return isdpa
+
+def get_child_orgs_without_dpa(org_id, child_org_list=[]):
+    
+    child_org_roleobjs = list(set(list(UserRole.objects.filter(org_parent_id=org_id).values_list("org_id", flat=True))))
+
+    for each_org in child_org_roleobjs:
+        
+        org_roleobj = UserRole.objects.filter(org_id=each_org)
+        org_role_list = [each.role.role_name for each in org_roleobj]
+        if "DPA" not in org_role_list:
+            child_org_list.append(each_org)
+        get_child_orgs_without_dpa(each_org, child_org_list)
+        
+    return child_org_list
