@@ -201,24 +201,7 @@ def check_user(request):
 
         try:
 
-            query = f"""
-                    mutation {{
-                        register(
-                        email: "{email}",
-                        username: "{username}",
-                        password1: "{password}",
-                        password2: "{password}",
-                    ) {{
-                        success,
-                        errors,
-                        token,
-                        refresh_token
-                    }}
-            }}"""
-
-            headers = {}
-            response = requests.post(auth_url, json={"query": query}, headers=headers)
-            response_json = json.loads(response.text)
+            response_json = utils.create_user(auth_url, email, username, password)
             print(response_json)
 
             if response_json["data"]["register"]["success"] == True:
@@ -245,6 +228,12 @@ def check_user(request):
             }
             return JsonResponse(context, safe=False)
     else:
+        UserObjs = CustomUser.objects.filter(username=username)
+        if  userinfo.get("given_name") != None:
+            UserObjs.update(first_name=userinfo.get("given_name"))
+        if  userinfo.get("family_name") != None:
+            UserObjs.update(last_name=userinfo.get("family_name"))            
+                
         user_roles = UserRole.objects.filter(username__username=username).values(
             "org_id", "org_title", "role__role_name", "org_status"
         )
@@ -647,16 +636,38 @@ def update_user_role(request):
         try:
             role = Role.objects.get(role_name=role_name)
             user = (
-                CustomUser.objects.get(username=tgt_user_name)
+                CustomUser.objects.filter(username=tgt_user_name)
                 if (tgt_user_email == None or tgt_user_email == "")
-                else CustomUser.objects.get(email=tgt_user_email)
+                else CustomUser.objects.filter(email=tgt_user_email)
             )
+            
+            if user.count() == 0 :
+                if tgt_user_email: 
+                    response_json = utils.create_user(auth_url, tgt_user_email, tgt_user_email, password)
+                    
+                    if response_json["data"]["register"]["success"] == True:
+                        pass
+                    else:
+                        context = {
+                            "Success": False,
+                            "errors": "user doesn't exist.  Not able to register new user.",
+                            "error_description": response_json["data"]["register"]["errors"],
+                        }
 
-            UserRoleObjs = UserRole.objects.filter(username=user, org_id=org_id)
+                        return JsonResponse(context, safe=False)
+                else:
+                    context = {
+                            "Success": False,
+                            "error": "Not able to update userrole",
+                            "error_description": "user doesn't exist.",
+                        }
+                    return JsonResponse(context, safe=False)
+
+            UserRoleObjs = UserRole.objects.filter(username=user[0], org_id=org_id)
             UserRoleObjCount = UserRoleObjs.count()
             if UserRoleObjCount == 0:
                 newUserRole = UserRole(
-                    username=user,
+                    username=user[0],
                     org_id=org_id,
                     org_parent_id=org_parent_id,
                     org_title=org_title,

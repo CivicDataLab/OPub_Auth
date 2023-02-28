@@ -1,4 +1,6 @@
 from ..models import *
+import requests
+import json
 
 
 def check_user_role(calling_user, org_id):
@@ -59,3 +61,26 @@ def get_child_orgs_without_dpa(org_id, child_org_list=[]):
         get_child_orgs_without_dpa(each_org, child_org_list)
         
     return child_org_list
+
+def create_user(auth_url, email, username, password):
+    query = f"""
+            mutation {{
+                register(
+                email: "{email}",
+                username: "{username}",
+                password1: "{password}",
+                password2: "{password}",
+            ) {{
+                success,
+                errors,
+                token,
+                refresh_token
+            }}
+    }}"""
+
+    headers = {}
+    response = requests.post(auth_url, json={"query": query}, headers=headers)
+    response_json = json.loads(response.text)
+    return response_json
+
+    
