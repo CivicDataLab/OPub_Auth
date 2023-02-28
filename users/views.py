@@ -116,7 +116,7 @@ def has_access(username, access_org_id, access_data_id, access_req):
         userrole == "DPA"
         and userorg != ""
         and access_req
-        not in ["approve_organization", "publish_dataset", "approve_license"]
+        not in ["approve_organization", "publish_dataset", "approve_license", "approve_policy"]
     ):
         context = {"Success": True, "access_allowed": True, "role": "DPA"}
         return JsonResponse(context, safe=False)
