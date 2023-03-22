@@ -477,8 +477,14 @@ def get_users(request):
 
     if ispmu and org_id == "":
         users = CustomUser.objects.exclude(username=username).values(
-            "username", "email"
+            "username", "email", "first_name"
         )
+        if user_type == ["All"]:
+            users_list = []
+            for user in users:
+                users_list.append({"username": user['username'], "email":user["email"], "first_name":user["first_name"]})
+            context = {"Success": True, "users": users_list}
+            return JsonResponse(context, safe=False)
         users_list = []
         for user in users:
             user_roles = UserRole.objects.filter(
@@ -559,7 +565,7 @@ def get_users(request):
     context = {
         "Success": False,
         "error": "No Matching org and user found",
-        "error_description": ("org is " + userorg + " and role is " + userrole),
+        "error_description": ("org is " + org_id + " and role is " + user_type),
     }
     return JsonResponse(context, safe=False)
 
