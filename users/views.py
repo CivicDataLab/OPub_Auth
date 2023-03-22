@@ -436,7 +436,20 @@ def get_users(request):
         return JsonResponse(context, safe=False)
     username = userinfo["preferred_username"]
 
+    # check for username access
     ispmu = False
+    ispra = False
+    isdp = False
+    iscr = False
+    calling_user = CustomUser.objects.get(username=username)
+    ispmu, ispra, isdp, iscr = utils.check_user_role(calling_user, org_id)
+    print(ispmu, ispra, isdp, iscr)
+
+
+
+
+
+    '''ispmu = False
     ispra = False
     userroleobj = UserRole.objects.filter(
         username__username=username, org_id=org_id
@@ -460,9 +473,9 @@ def get_users(request):
         return JsonResponse(context, safe=False)
 
     userrole = userroleobj[0]["role__role_name"]
-    userorg = userroleobj[0]["org_id"]
+    userorg = userroleobj[0]["org_id"]'''
 
-    if userrole == "PMU" and org_id == "":
+    if ispmu and org_id == "":
         users = CustomUser.objects.exclude(username=username).values(
             "username", "email"
         )
@@ -495,7 +508,7 @@ def get_users(request):
         context = {"Success": True, "users": users_list}
         return JsonResponse(context, safe=False)
 
-    if userrole in ["DPA", "PMU"] and org_id != "":
+    if (ispmu or ispra) and org_id != "":
         user_roles = (
             UserRole.objects.filter(org_id=org_id, role__role_name__in=user_type)
             # .exclude(role__role_name__in=["PMU", "DPA"])
