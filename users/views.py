@@ -711,8 +711,12 @@ def update_user_role(request):
     if action == "delete":
         try:
             role = Role.objects.get(role_name=role_name)
-            user = CustomUser.objects.get(username=tgt_user_name)
-            UserRoleObj = UserRole.objects.get(username=user, org_id=org_id, role=role)
+            user = (
+                CustomUser.objects.filter(username=tgt_user_name)
+                if (tgt_user_email == None or tgt_user_email == "")
+                else CustomUser.objects.filter(email=tgt_user_email)
+            )
+            UserRoleObj = UserRole.objects.get(username=user[0], org_id=org_id, role=role)
             UserRoleObj.delete()
             context = {"Success": True, "comment": "User Role Deleted Successfully"}
             return JsonResponse(context, safe=False)
