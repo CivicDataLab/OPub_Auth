@@ -166,6 +166,13 @@ GRAPHQL_JWT = {
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
+    }
+}
+
 # security headers 
 # SECURE_BROWSER_XSS_FILTER = True  
 # SECURE_HSTS_SECONDS = 31536000 
