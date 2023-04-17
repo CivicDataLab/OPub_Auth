@@ -156,7 +156,7 @@ def has_access(username, access_org_id, access_data_id, access_req):
 
 # api functions
 @csrf_exempt
-@ratelimit(key='ip', rate='2/m')
+# @ratelimit(key='ip', rate='2/m')
 def verify_user_token(request):
 
     print("-----------------", request.body)
@@ -170,7 +170,7 @@ def verify_user_token(request):
 
 
 @csrf_exempt
-@ratelimit(key='ip', rate='2/m')
+# @ratelimit(key='ip', rate='2/m')
 def check_user(request):
     post_data = json.loads(request.body.decode("utf-8"))
     access_token = request.META.get(
@@ -262,7 +262,7 @@ def check_user(request):
 
 
 @csrf_exempt
-@ratelimit(key='ip', rate='2/m')
+# @ratelimit(key='ip', rate='2/m')
 def check_user_access(request):
 
     print("-----------------", request.body)
@@ -420,7 +420,7 @@ def modify_org_status(request):
 
 
 @csrf_exempt
-@ratelimit(key='ip', rate='2/m')
+# @ratelimit(key='ip', rate='2/m')
 def get_users(request):
 
     print("-----------------", request.body)
