@@ -15,6 +15,7 @@ COPY OPub_Auth/ /code/
 COPY opub_back_env/lib/python3.10/site-packages/ /usr/local/lib/python3.10/
 ENV PYTHONPATH="$PYTHONPATH:/usr/local/lib/python3.10/"
 
+RUN pip uninstall psycopg2-binary
 RUN pip install psycopg2-binary
 RUN python manage.py migrate
 RUN python manage.py createcachetable
