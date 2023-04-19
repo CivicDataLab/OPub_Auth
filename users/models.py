@@ -14,6 +14,15 @@ from datetime import datetime
 class CustomUser(AbstractUser):
 
     email = models.EmailField(blank=False, max_length=254, verbose_name="email address")
+    
+    user_type = models.CharField(max_length=100, null=True, blank=True)
+    phn       = models.CharField(max_length=13, null=True, blank=True)
+    cr_org    = models.CharField(max_length=100, null=True, blank=True)
+    cr_email  = models.EmailField(max_length=100, null=True, blank=True)
+    cr_phone  = models.CharField(max_length=13, null=True, blank=True)
+    dp_org    = models.CharField(max_length=100, null=True, blank=True)
+    dp_email  = models.EmailField(max_length=100, null=True, blank=True)
+    dp_phone  = models.CharField(max_length=13, null=True, blank=True)
 
     USERNAME_FIELD = "username"
     EMAIL_FIELD = "email"

@@ -9,7 +9,7 @@ admin.site.register(UserStatus)
 
 
 class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ["username", "email"]
+    list_display = ["username", "email", "phn", "cr_org", "cr_email", "cr_phone"]
     # readonly_fields = ('created_on','updated_on')
 
     class Meta:
