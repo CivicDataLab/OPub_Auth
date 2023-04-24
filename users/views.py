@@ -1013,7 +1013,7 @@ def get_user_info(request):
 
     try:
         users = CustomUser.objects.filter(username=user_name).values(
-            "username", "email", "first_name", "last_name", "user_type", "phn", "cr_org", "cr_email", "cr_phone", "dp_org", "dp_email", "dp_phone", 
+            "username", "email", "first_name", "last_name", "user_type", "phn", "dpa_org", "dpa_email", "dpa_phone", "dpa_desg", "dp_org", "dp_email", "dp_phone", "dp_desg"
         )
 
         context = {
@@ -1024,12 +1024,14 @@ def get_user_info(request):
             "last_name": users[0]["last_name"],                        
             "user_type": users[0]["user_type"],
             "phn": users[0]["phn"],
-            "cr_org": users[0]["cr_org"],
-            "cr_email": users[0]["cr_email"],
-            "cr_phone": users[0]["cr_phone"],
+            "dpa_org": users[0]["dpa_org"],
+            "dpa_email": users[0]["dpa_email"],
+            "dpa_phone": users[0]["dpa_phone"],
+            "dpa_desg": users[0]["dpa_desg"],
             "dp_org": users[0]["dp_org"],
             "dp_email": users[0]["dp_email"],
             "dp_phone": users[0]["dp_phone"],
+            "dp_desg": users[0]["dp_desg"],
         }
         return JsonResponse(context, safe=False)
 
@@ -1052,12 +1054,14 @@ def update_user_info(request):
     last_name = post_data.get("last_name", None)    
     user_type = post_data.get("user_type", None)
     phn       = post_data.get("phn", None)
-    cr_org    = post_data.get("cr_org", None)
-    cr_email  = post_data.get("cr_email", None)
-    cr_phone  = post_data.get("cr_phone", None)
+    dpa_org    = post_data.get("dpa_org", None)
+    dpa_email  = post_data.get("dpa_email", None)
+    dpa_phone  = post_data.get("dpa_phone", None)
+    dpa_desg  = post_data.get("dpa_desg", None)
     dp_org    = post_data.get("dp_org", None)
     dp_email  = post_data.get("dp_email", None)
     dp_phone  = post_data.get("dp_phone", None)
+    dp_desg  = post_data.get("dp_desg", None)
                                     
     access_token = request.META.get(
         "HTTP_ACCESS_TOKEN", post_data.get("access_token", None)
@@ -1094,18 +1098,22 @@ def update_user_info(request):
             UserObjs.update(user_type=user_type)
         if  phn != None:
             UserObjs.update(phn=phn)
-        if  cr_org != None:
-            UserObjs.update(cr_org=cr_org)
-        if  cr_email != None:
-            UserObjs.update(cr_email=cr_email)
-        if  cr_phone != None:
-            UserObjs.update(cr_phone=cr_phone)
+        if  dpa_org != None:
+            UserObjs.update(dpa_org=dpa_org)
+        if  dpa_email != None:
+            UserObjs.update(dpa_email=dpa_email)
+        if  dpa_phone != None:
+            UserObjs.update(dpa_phone=dpa_phone)
+        if  dpa_desg != None:
+            UserObjs.update(dpa_desg=dpa_desg)            
         if  dp_org != None:
             UserObjs.update(dp_org=dp_org)
         if  dp_email != None:
             UserObjs.update(dp_email=dp_email)
         if  dp_phone != None:
-            UserObjs.update(dp_phone=dp_phone)                                                                         
+            UserObjs.update(dp_phone=dp_phone)   
+        if  dp_desg != None:
+            UserObjs.update(dp_desg=dp_desg)                                                                                   
 
         context = {
             "Success": True,

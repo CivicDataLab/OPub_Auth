@@ -17,12 +17,14 @@ class CustomUser(AbstractUser):
     
     user_type = models.CharField(max_length=100, null=True, blank=True)
     phn       = models.CharField(max_length=13, null=True, blank=True)
-    cr_org    = models.CharField(max_length=100, null=True, blank=True)
-    cr_email  = models.EmailField(max_length=100, null=True, blank=True)
-    cr_phone  = models.CharField(max_length=13, null=True, blank=True)
+    dpa_org    = models.CharField(max_length=100, null=True, blank=True)
+    dpa_email  = models.EmailField(max_length=100, null=True, blank=True)
+    dpa_phone  = models.CharField(max_length=13, null=True, blank=True)
+    dpa_desg   = models.CharField(max_length=100, null=True, blank=True)
     dp_org    = models.CharField(max_length=100, null=True, blank=True)
     dp_email  = models.EmailField(max_length=100, null=True, blank=True)
     dp_phone  = models.CharField(max_length=13, null=True, blank=True)
+    dp_desg   = models.CharField(max_length=100, null=True, blank=True)
 
     USERNAME_FIELD = "username"
     EMAIL_FIELD = "email"
