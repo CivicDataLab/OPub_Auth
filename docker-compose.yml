@@ -22,7 +22,7 @@ services:
       - DB_HOST=db
       - DB_PORT=5432   
     container_name: "opub_dataset_server"
-    command: python OPub_Auth/manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
     ports:

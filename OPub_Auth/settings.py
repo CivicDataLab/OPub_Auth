@@ -14,6 +14,8 @@ from pathlib import Path
 import django
 from django.utils.encoding import force_str
 import os
+from dotenv import load_dotenv
+load_dotenv(".env")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,6 +42,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000/",
     "http://127.0.0.1:3000/",
     "https://auth.idp.civicdatalab.in",
+    "*",
 ]
 
 
@@ -58,11 +61,11 @@ INSTALLED_APPS = [
     "graphql_auth",
     "users",
     "django_filters",
-    "django_extensions",
+    # "django_extensions",
 ]
 
 MIDDLEWARE = [
-    "OPub_Auth.middleware.SimpleMiddleware",
+    # "OPub_Auth.middleware.SimpleMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -102,12 +105,12 @@ AUTH_USER_MODEL = "users.CustomUser"
 
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get('DB_ENGINE', "django.db.backends.sqlite3"),
-        "NAME": os.environ.get('DB_NAME', BASE_DIR / "db.sqlite3"),
-        "USER": os.environ.get('DB_USER', "DB_USER"),
-        "PASSWORD": os.environ.get('DB_PASSWORD', 'DB_PASSWORD'),
-        "HOST": os.environ.get('DB_HOST', 'DB_HOST'),
-        "PORT":os.environ.get('DB_PORT', 'DB_PORT'), 
+        "ENGINE": os.getenv('DB_ENGINE', "django.db.backends.sqlite3"),
+        "NAME": os.getenv('DB_NAME', str(BASE_DIR / "db.sqlite3")),
+        "USER": os.getenv('DB_USER', "DB_USER"),
+        "PASSWORD": os.getenv('DB_PASSWORD', 'DB_PASSWORD'),
+        "HOST": os.getenv('DB_HOST', 'DB_HOST'),
+        "PORT":os.getenv('DB_PORT', 'DB_PORT'), 
         
     }
 }
@@ -198,7 +201,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = "static/"
+# STATIC_ROOT = ''
+STATIC_URL = "/static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
