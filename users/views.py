@@ -14,30 +14,37 @@ from .models import *
 import os
 from users.utils import utils
 from django_ratelimit.decorators import ratelimit
-from dotenv import load_dotenv
+from django.db.models import Count
+from keycloak import KeycloakAdmin
 
-load_dotenv(".env")
 config = ConfigParser()
 config.read("config.ini")
 
 
 # configure keycloak client
 keycloak_openid = KeycloakOpenID(
-    server_url=os.getenv("KEYCLOAK_URL", config.get("keycloak", "server_url")),
-    client_id=os.getenv("KEYCLOAK_CLIENT_ID", config.get("keycloak", "client_id")),
-    realm_name=os.getenv(
+    server_url=os.environ.get("KEYCLOAK_URL", config.get("keycloak", "server_url")),
+    client_id=os.environ.get("KEYCLOAK_CLIENT_ID", config.get("keycloak", "client_id")),
+    realm_name=os.environ.get(
         "KEYCLOAK_REALM_NAME", config.get("keycloak", "realm_name")
     ),
-    client_secret_key=os.getenv(
+    client_secret_key=os.environ.get(
         "KEYCLOAK_SECRET", config.get("keycloak", "client_secret_key")
     ),
 )
 config_well_known = keycloak_openid.well_known()
 
+# configure keycloak admin client
+keycloak_admin = KeycloakAdmin(
+                        server_url=os.environ.get("KEYCLOAK_URL", config.get("keycloak", "server_url")),
+                        username=os.environ.get("KEYCLOAK_ADMIN", config.get("keycloak", "admin")),
+                        password=os.environ.get("KEYCLOAK_ADMINPASS", config.get("keycloak", "adminpass")),
+                        verify=False)
+
 
 # graphql config
-password = os.getenv("USER_PASS", config.get("graphql", "password"))
-auth_url = os.getenv("AUTH_GRAPHQL_URL", config.get("graphql", "base_url"))
+password = os.environ.get("USER_PASS", config.get("graphql", "password"))
+auth_url = os.environ.get("AUTH_GRAPHQL_URL", config.get("graphql", "base_url"))
 
 # util functions
 @csrf_exempt
@@ -210,6 +217,9 @@ def check_user(request):
             print(response_json)
 
             if response_json["data"]["register"]["success"] == True:
+                createduserobj = CustomUser.objects.filter(username=username)
+                if  userinfo.get("phone_number") != None: 
+                    createduserobj.update(phn=userinfo.get("phone_number"))   
                 context = {
                     "Success": True,
                     "username": username,
@@ -234,10 +244,12 @@ def check_user(request):
             return JsonResponse(context, safe=False)
     else:
         UserObjs = CustomUser.objects.filter(username=username)
-        if  userinfo.get("given_name") != None:
+        if  userinfo.get("given_name") != None: #and UserObjs[0].first_name == None
             UserObjs.update(first_name=userinfo.get("given_name"))
-        if  userinfo.get("family_name") != None:
-            UserObjs.update(last_name=userinfo.get("family_name"))            
+        if  userinfo.get("family_name") != None: # and UserObjs[0].last_name == None
+            UserObjs.update(last_name=userinfo.get("family_name")) 
+        if  userinfo.get("phone_number") != None: # and UserObjs[0].last_name == None
+            UserObjs.update(phn=userinfo.get("phone_number"))                        
                 
         user_roles = UserRole.objects.filter(username__username=username).values(
             "org_id", "org_title", "role__role_name", "org_status"
@@ -483,13 +495,19 @@ def get_users(request):
     userorg = userroleobj[0]["org_id"]'''
 
     if ispmu and org_id == "":
-        users = CustomUser.objects.exclude(username=username).values(
-            "username", "email", "first_name"
+        users = CustomUser.objects.all().values(
+            "username", "email", "first_name", "date_joined", "last_name"
         )
+        # CustomUser.objects.exclude(username=username).values(
+        #     "username", "email", "first_name", "date_joined", "last_name"
+        # )
         if user_type == ["All"]:
             users_list = []
             for user in users:
-                users_list.append({"username": user['username'], "email":user["email"], "first_name":user["first_name"]})
+                dataset_access_count = len(Datasetrequest.objects.filter(username__username=user['username']).values('dataset_id').annotate(dcount=Count('dataset_id')))
+                dataset_obj = Datasetrequest.objects.filter(username__username=user["username"]).values_list("dataset_id", flat=True).order_by("dataset_id")
+                dataset_list = list(set([id for id in dataset_obj]))
+                users_list.append({"username": user['username'], "email":user["email"], "name":user["first_name"] + " " + user["last_name"], "date_joined": user["date_joined"], "dataset_access_count": dataset_access_count, "dataset_list": dataset_list})
             context = {"Success": True, "users": users_list}
             return JsonResponse(context, safe=False)
         users_list = []
@@ -501,6 +519,10 @@ def get_users(request):
                 continue
             user_roles_res = []
             for role in user_roles:
+                provider_count = UserRole.objects.filter(org_id=role["org_id"], role__role_name="DP").count()
+                # print(role["org_title"], provider_count)
+                dataset_obj = DatasetOwner.objects.filter(username__username=user["username"]).values_list("dataset_id", flat=True).order_by("dataset_id")
+                dataset_list = [id for id in dataset_obj]
                 user_roles_res.append(
                     {
                         "org_id": role["org_id"],
@@ -508,12 +530,15 @@ def get_users(request):
                         "role": role["role__role_name"],
                         "status": role["org_status"],
                         "updated": role["updated"],
+                        "dp_count": provider_count,
+                        "dataset_list": dataset_list
                     }
                 )
             users_list.append(
                 {
                     "username": user["username"],
                     "email": user["email"],
+                    "name": user["first_name"] + " " + user["last_name"],
                     "access": user_roles_res,
                 }
             )
@@ -984,8 +1009,8 @@ def get_user_datasets(request):
 def get_sys_token(request):
 
     # system config
-    sys_user = (os.getenv("SYSTEM_USER", config.get("sysuser", "sys_user")),)
-    sys_pass = (os.getenv("SYSTEM_USER_PASS", config.get("sysuser", "sys_pass")),)
+    sys_user = (os.environ.get("SYSTEM_USER", config.get("sysuser", "sys_user")),)
+    sys_pass = (os.environ.get("SYSTEM_USER_PASS", config.get("sysuser", "sys_pass")),)
 
     try:
 
@@ -1015,25 +1040,33 @@ def get_user_info(request):
 
     try:
         users = CustomUser.objects.filter(username=user_name).values(
-            "username", "email", "first_name", "last_name", "user_type", "phn", "dpa_org", "dpa_email", "dpa_phone", "dpa_desg", "dp_org", "dp_email", "dp_phone", "dp_desg"
+            "username", "email", "first_name", "last_name", "user_type", "phn" 
         )
-
+        
+        user = users[0]
+        
+        user_roles = UserRole.objects.filter(username__username=user["username"]).values("org_id", "org_title", "role__role_name", "org_status", "updated")
+        user_roles_res = {"DP": [], "DPA": [], "PMU": [], "CR": []}
+        
+        for role in user_roles:
+            user_roles_res[role["role__role_name"]].append(
+                {
+                    "org_id": role["org_id"],
+                    "org_title": role["org_title"],
+                    "role": role["role__role_name"],
+                    "status": role["org_status"],
+                    "updated": role["updated"],
+                }
+            )
         context = {
             "Success": True,
             "username": user_name,
-            "email": users[0]["email"],
-            "first_name": users[0]["first_name"],
-            "last_name": users[0]["last_name"],                        
-            "user_type": users[0]["user_type"],
-            "phn": users[0]["phn"],
-            "dpa_org": users[0]["dpa_org"],
-            "dpa_email": users[0]["dpa_email"],
-            "dpa_phone": users[0]["dpa_phone"],
-            "dpa_desg": users[0]["dpa_desg"],
-            "dp_org": users[0]["dp_org"],
-            "dp_email": users[0]["dp_email"],
-            "dp_phone": users[0]["dp_phone"],
-            "dp_desg": users[0]["dp_desg"],
+            "email": user["email"],
+            "first_name": user["first_name"],
+            "last_name": user["last_name"],                        
+            "user_type": user["user_type"],
+            "phn": user["phn"],
+            "access": user_roles_res,
         }
         return JsonResponse(context, safe=False)
 
@@ -1079,7 +1112,6 @@ def update_user_info(request):
         return JsonResponse(context, safe=False)
 
     username = userinfo["preferred_username"]    
-
     
     if username != user_name:
         context = {
@@ -1091,11 +1123,23 @@ def update_user_info(request):
     
 
     try:
+        # Get user ID from username
+        keycloak_admin.realm_name=os.environ.get("KEYCLOAK_REALM_NAME", config.get("keycloak", "realm_name"))
+        user_id_keycloak = keycloak_admin.get_user_id(username)
+        print ('----id', user_id_keycloak)
+        print ('---user', user_name)
+        
         UserObjs = CustomUser.objects.filter(username=user_name)
         if  first_name != None:
             UserObjs.update(first_name=first_name)
+            # Update User
+            response = keycloak_admin.update_user(user_id=user_id_keycloak,
+                                      payload={'firstName': first_name})
         if  last_name != None:
-            UserObjs.update(last_name=last_name)                    
+            UserObjs.update(last_name=last_name)
+            # Update User
+            response = keycloak_admin.update_user(user_id=user_id_keycloak,
+                                      payload={'lastName':last_name})
         if  user_type != None:
             UserObjs.update(user_type=user_type)
         if  phn != None:
@@ -1272,7 +1316,7 @@ def get_user_orgs(request):
         )
 
         userroleobj = UserRole.objects.filter(
-            username=user, role__role_name="DPA"
+            username=user, role__role_name__in=["DPA", "DP"]
         ).values("org_id", "role__role_name", "org_title")
         orgs = []
         org_details = []
