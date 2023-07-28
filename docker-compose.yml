@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  db:
+  auth_db:
     image: "postgres:14.4"
     restart: always
     container_name: "auth_postgres"
@@ -11,7 +11,7 @@ services:
     ports:
       - "54322:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - auth_postgres_data:/var/lib/postgresql/data
   web:
     build: .
     environment:
@@ -19,16 +19,16 @@ services:
       - DB_NAME=postgres
       - DB_USER=postgres
       - DB_PASSWORD=postgres
-      - DB_HOST=db
+      - DB_HOST=auth_db
       - DB_PORT=5432   
-    container_name: "opub_dataset_server"
-    command: python manage.py runserver 0.0.0.0:8000
+    container_name: "opub_auth_server"
+    command: python manage.py runserver 0.0.0.0:8009
     volumes:
       - .:/code
     ports:
-      - "8007:8000"
+      - "8007:8009"
     depends_on:
-      - db
+      - auth_db
 volumes:
-  postgres_data:
-    name: opub_postgres_data
+  auth_postgres_data:
+    name: auth_postgres_data
