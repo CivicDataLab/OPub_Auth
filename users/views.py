@@ -14,6 +14,7 @@ from .models import *
 import os
 from users.utils import utils
 from django_ratelimit.decorators import ratelimit
+from dotenv import load_dotenv
 from django.db.models import Count
 from keycloak import KeycloakAdmin
 
@@ -23,12 +24,12 @@ config.read("config.ini")
 
 # configure keycloak client
 keycloak_openid = KeycloakOpenID(
-    server_url=os.environ.get("KEYCLOAK_URL", config.get("keycloak", "server_url")),
-    client_id=os.environ.get("KEYCLOAK_CLIENT_ID", config.get("keycloak", "client_id")),
-    realm_name=os.environ.get(
+    server_url=os.getenv("KEYCLOAK_URL", config.get("keycloak", "server_url")),
+    client_id=os.getenv("KEYCLOAK_CLIENT_ID", config.get("keycloak", "client_id")),
+    realm_name=os.getenv(
         "KEYCLOAK_REALM_NAME", config.get("keycloak", "realm_name")
     ),
-    client_secret_key=os.environ.get(
+    client_secret_key=os.getenv(
         "KEYCLOAK_SECRET", config.get("keycloak", "client_secret_key")
     ),
 )
@@ -36,15 +37,15 @@ config_well_known = keycloak_openid.well_known()
 
 # configure keycloak admin client
 keycloak_admin = KeycloakAdmin(
-                        server_url=os.environ.get("KEYCLOAK_URL", config.get("keycloak", "server_url")),
-                        username=os.environ.get("KEYCLOAK_ADMIN", config.get("keycloak", "admin")),
-                        password=os.environ.get("KEYCLOAK_ADMINPASS", config.get("keycloak", "adminpass")),
+                        server_url=os.getenv("KEYCLOAK_URL", config.get("keycloak", "server_url")),
+                        username=os.getenv("KEYCLOAK_ADMIN", config.get("keycloak", "admin")),
+                        password=os.getenv("KEYCLOAK_ADMINPASS", config.get("keycloak", "adminpass")),
                         verify=False)
 
 
 # graphql config
-password = os.environ.get("USER_PASS", config.get("graphql", "password"))
-auth_url = os.environ.get("AUTH_GRAPHQL_URL", config.get("graphql", "base_url"))
+password = os.getenv("USER_PASS", config.get("graphql", "password"))
+auth_url = os.getenv("AUTH_GRAPHQL_URL", config.get("graphql", "base_url"))
 
 # util functions
 @csrf_exempt
@@ -1009,8 +1010,8 @@ def get_user_datasets(request):
 def get_sys_token(request):
 
     # system config
-    sys_user = (os.environ.get("SYSTEM_USER", config.get("sysuser", "sys_user")),)
-    sys_pass = (os.environ.get("SYSTEM_USER_PASS", config.get("sysuser", "sys_pass")),)
+    sys_user = (os.getenv("SYSTEM_USER", config.get("sysuser", "sys_user")),)
+    sys_pass = (os.getenv("SYSTEM_USER_PASS", config.get("sysuser", "sys_pass")),)
 
     try:
 
@@ -1124,7 +1125,7 @@ def update_user_info(request):
 
     try:
         # Get user ID from username
-        keycloak_admin.realm_name=os.environ.get("KEYCLOAK_REALM_NAME", config.get("keycloak", "realm_name"))
+        keycloak_admin.realm_name=os.getenv("KEYCLOAK_REALM_NAME", config.get("keycloak", "realm_name"))
         user_id_keycloak = keycloak_admin.get_user_id(username)
         print ('----id', user_id_keycloak)
         print ('---user', user_name)
