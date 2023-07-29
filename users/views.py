@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 from django.db.models import Count
 from keycloak import KeycloakAdmin
 
+load_dotenv(".env")
 config = ConfigParser()
 config.read("config.ini")
 
