@@ -6,6 +6,7 @@ charset-normalizer==3.1.0
 deprecation==2.1.0
 Django==3.0
 django-cors-headers==3.11.0
+django-extensions==3.1.0
 django-filter==21.1
 django-graphiql==0.4.4
 django-graphql-auth==0.3.16
