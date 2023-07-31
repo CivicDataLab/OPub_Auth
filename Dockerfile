@@ -1,7 +1,6 @@
 FROM python:3.8
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV KEYCLOAK_URL=https://kc.ndp.civicdatalab.in/auth/
 
 # RUN echo 'deb http://deb.debian.org/debian stretch main' >> /etc/apt/sources.list && \
 #     apt-get update && \
